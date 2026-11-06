@@ -1,5 +1,7 @@
 """Connection history recording. Terminal contents and passwords are never stored."""
 
+from __future__ import annotations
+
 import logging
 from datetime import datetime
 from typing import Optional

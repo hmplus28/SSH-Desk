@@ -10,6 +10,8 @@ import json
 import logging
 from typing import Optional
 
+from ssh_desk.core.exceptions import KeyringUnavailableError
+
 log = logging.getLogger("ssh_desk.credentials")
 
 SCHEMA_ATTR = "xdg:schema"

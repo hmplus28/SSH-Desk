@@ -1,5 +1,7 @@
 """Server CRUD, groups, saved paths, saved commands, dashboard stats."""
 
+from __future__ import annotations
+
 import logging
 from typing import Optional
 

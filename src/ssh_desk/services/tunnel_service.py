@@ -1,5 +1,7 @@
 """Port forwarding (local/remote/dynamic) via detached tunnel daemon processes."""
 
+from __future__ import annotations
+
 import logging
 import os
 import subprocess
