@@ -15,7 +15,7 @@ SSH Desk — реальный, устанавливаемый продукт (н
 - 🔐 **Безопасность прежде всего**: строгая проверка host-ключей с диалогом отпечатка; секреты никогда не попадают в БД/логи/argv; без `sshpass` и без `StrictHostKeyChecking=no`
 - 🌐 **Устойчивость к перебоям сети**: цепочка зеркал PyPI (официальное → ArvanCloud (Иран) → TUNA → Aliyun → Tencent) и полностью офлайн-установка через `install.sh --offline`
 
-📄 **[Полное руководство пользователя (PDF, на фарси)](docs/SSH-Desk-User-Guide-fa.pdf)** — 14 страниц с иллюстрациями: офлайн-установка, полный справочник CLI, терминал, SFTP, туннели и модель безопасности.
+📄 **[Полное руководство пользователя (PDF, на русском)](docs/SSH-Desk-User-Guide-ru.pdf)** — 16 страниц с иллюстрациями: офлайн-установка, полный справочник CLI, терминал, SFTP, туннели и модель безопасности. Руководство доступно ещё на 7 языках: [English](docs/SSH-Desk-User-Guide-en.pdf) · [فارسی](docs/SSH-Desk-User-Guide-fa.pdf) · [العربية](docs/SSH-Desk-User-Guide-ar.pdf) · [简体中文](docs/SSH-Desk-User-Guide-zh.pdf) · [Español](docs/SSH-Desk-User-Guide-es.pdf) · [Français](docs/SSH-Desk-User-Guide-fr.pdf)
 
 ---
 

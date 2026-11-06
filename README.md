@@ -17,12 +17,12 @@ SSH servers: passwords are stored **only** in the GNOME Keyring (Secret Service)
 the SSH engine is the **system OpenSSH**, and the built-in terminal is a **real PTY**
 (vim/nano, colors, Ctrl+C, resize — everything works).
 
-- 🖥️ **Desktop GUI** (PySide6): dark/light themes, Persian/English (full RTL), real terminal tabs, SFTP file manager, tunnels, keys, history
+- 🖥️ **Desktop GUI** (PySide6): dark/light themes, 7 UI languages (full RTL for Persian & Arabic), real terminal tabs, SFTP file manager, tunnels, keys, history
 - ⌨️ **CLI** (Typer): works **without** the GUI, configurable command name (`sss`, `cnc`, `sshgo`, …), bash/zsh completion with alias completion
 - 🔐 **Security-first**: strict host key checking with fingerprint dialogs, secrets never in DB/logs/argv, no `sshpass`, no `StrictHostKeyChecking=no`
 - 🌐 **Network-outage-proof**: PyPI mirror fallback chain (official → ArvanCloud IR → TUNA → Aliyun → Tencent) + fully offline install (`install.sh --offline`)
 
-📄 **Persian user guide (14-page illustrated PDF): [docs/SSH-Desk-User-Guide-fa.pdf](docs/SSH-Desk-User-Guide-fa.pdf)** — install (incl. offline/mirror flow), full CLI reference, terminal, SFTP, tunnels, security model.
+📄 **User guides — 14-page illustrated PDFs in 7 languages:** [English](docs/SSH-Desk-User-Guide-en.pdf) · [فارسی](docs/SSH-Desk-User-Guide-fa.pdf) · [العربية](docs/SSH-Desk-User-Guide-ar.pdf) · [简体中文](docs/SSH-Desk-User-Guide-zh.pdf) · [Русский](docs/SSH-Desk-User-Guide-ru.pdf) · [Español](docs/SSH-Desk-User-Guide-es.pdf) · [Français](docs/SSH-Desk-User-Guide-fr.pdf) — install (incl. offline/mirror flow), full CLI reference, terminal, SFTP, tunnels, security model.
 
 ---
 
@@ -94,19 +94,47 @@ Full details: [docs/SECURITY.md](docs/SECURITY.md).
 
 ```bash
 pip install -e .[dev]
-pytest          # 54 tests
+pytest          # 65 tests
 ruff check .    # clean
 ```
 
 Architecture and internals: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) ·
 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) · [docs/USER_GUIDE.md](docs/USER_GUIDE.md) ·
-[Guide PDF (fa)](docs/SSH-Desk-User-Guide-fa.pdf)
+[User guide PDFs ×7](docs/SSH-Desk-User-Guide-en.pdf)
 
 ## Requirements
 
 - Ubuntu 22.04 / 24.04+ (or any Debian-based distro)
 - Python 3.10+ (3.12 recommended), `openssh-client`
 - GNOME Keyring (`sudo apt install gnome-keyring`) for stored passwords
+
+## FAQ
+
+**What is SSH Desk?**
+SSH Desk is an open-source SSH connection manager for Ubuntu (and any Debian-based distro). It combines a desktop GUI (PySide6) with a terminal-first CLI (`sss`) on one shared SQLite database and GNOME Keyring — a free, self-hosted alternative to tools like Termius, Remmina's SSH plugin or PuTTY on Linux.
+
+**How are passwords stored?**
+Only in the GNOME Keyring (Secret Service). The SQLite database holds a secret-less reference; the password never touches the database, logs, command arguments or environment variables. OpenSSH receives secrets through a secure askpass helper — `sshpass` is never used.
+
+**Does it replace OpenSSH?**
+No — it drives your **system's** OpenSSH. The terminal is a real PTY (vim, nano, htop, colors, Ctrl+C, resize all work), and host keys are checked with `StrictHostKeyChecking=yes`; turning that off is not possible.
+
+**Can the GUI and CLI be used at the same time?**
+Yes, and they always agree: one database, one keyring, one settings file. A server added in the GUI is immediately connectable via `sss prod nginx` from any terminal — and vice versa.
+
+**Does it work without internet?**
+Yes. Every pip call in the install scripts walks a mirror chain (official PyPI → ArvanCloud → TUNA → Aliyun → Tencent) and skips unreachable mirrors. You can pre-download everything with `scripts/download_wheels.sh` and install later with `install.sh --offline` using no network at all.
+
+**Is it available in my language?**
+The UI and CLI ship in 7 languages — English, Persian, Arabic (full RTL), Chinese, Russian, Spanish and French — selectable in Settings; the illustrated user guide is a separate PDF per language under `docs/`.
+
+**How can I script it?**
+The CLI has deterministic exit codes (0 success, 1 runtime error, 2 usage error, 130 Ctrl+C), `--dry-run` to print the exact ssh command, and `--exec` to run a single command — safe for cron, CI and Ansible-style automation.
+
+**How do I migrate from my existing `~/.ssh/config`?**
+Run `sss import --file ~/.ssh/config` — it previews every Host entry, detects duplicates, and imports aliases, users, ports, identity files and ProxyJump rules after you confirm.
+
+---
 
 ## License
 

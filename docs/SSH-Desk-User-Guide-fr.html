@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>SSH Desk — Guide de l'utilisateur</title>
+<style>
+/* ================= page ================= */
+@page { size: 720px 1020px; margin: 0; }
+:root {
+    --bg:     #0A1122;
+    --panel:  #121B31;
+    --border: #1E2A47;
+    --text:   #E8EEF9;
+    --muted:  #93A6C4;
+    --accent: #35D49A;
+}
+html, body {
+    margin: 0; padding: 0;
+    width: 720px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Vazirmatn', 'DejaVu Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.9;
+    overflow-wrap: break-word;
+}
+@media screen {
+    html { display: flex; justify-content: center; background: #04070F; }
+    body { margin: 20px auto; box-shadow: 0 0 60px rgba(0,0,0,.65); }
+}
+/* ================= cover ================= */
+.cover {
+    width: 720px; height: 1020px; box-sizing: border-box;
+    break-after: page;
+    overflow: hidden;
+    position: relative;
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: 56px 60px;
+}
+.glow { position: absolute; border-radius: 50%; filter: blur(90px); }
+.glow.g1 { width: 420px; height: 420px; background: rgba(53,212,154,.14); top: 0; left: 0; transform: translate(-120px, -120px); }
+.glow.g2 { width: 320px; height: 320px; background: rgba(53,212,154,.10); top: 640px; left: 380px; }
+.cover-badge {
+    position: absolute; top: 52px; left: 60px;
+    font-size: 12.5px; letter-spacing: .5px;
+    color: var(--muted);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 7px 16px; background: rgba(18,27,49,.7);
+}
+.cover-badge b { color: var(--accent); font-weight: 600; }
+.cover-kicker { color: var(--muted); font-size: 17px; font-weight: 500; margin-bottom: 6px; }
+.cover-title { font-size: 62px; font-weight: 800; line-height: 1.25; margin: 0 0 4px; }
+.cover-en {
+    font-size: 30px; font-weight: 700; color: var(--accent);
+    letter-spacing: 1px; margin-bottom: 18px;
+}
+.cover-sub { color: var(--muted); font-size: 15.5px; max-width: 520px; line-height: 1.95; }
+.term {
+    background: var(--panel);
+    border: 1px solid var(--border); border-radius: 14px;
+    margin: 30px 0 0; max-width: 520px;
+    box-shadow: 0 18px 40px rgba(0,0,0,.35);
+}
+.term-bar {
+    display: flex; align-items: center; gap: 7px;
+    padding: 11px 14px; border-bottom: 1px solid var(--border);
+}
+.dot { width: 11px; height: 11px; border-radius: 50%; }
+.dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
+.term-title { font-family: 'DejaVu Sans Mono', monospace; font-size: 11px; color: var(--muted); margin-left: 8px; }
+.term-body {
+    font-family: 'DejaVu Sans Mono', monospace;
+    font-size: 12.5px; line-height: 2.05;
+    padding: 14px 18px 16px; color: #C9D6EA;
+}
+.term-body .p { color: var(--accent); font-weight: 700; }
+.term-body .ok { color: var(--accent); }
+.term-body .dim { color: #64748F; }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; max-width: 100%; margin-top: 26px; }
+.chip {
+    flex: 0 1 auto; min-width: 0;
+    font-size: 12.5px; font-weight: 500;
+    color: var(--text);
+    background: rgba(53,212,154,.10);
+    border: 1px solid rgba(53,212,154,.35);
+    border-radius: 999px; padding: 6px 15px;
+}
+.cover-bottom {
+    position: absolute; bottom: 46px; right: 60px; left: 60px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid var(--border); padding-top: 18px;
+    font-size: 12.5px; color: var(--muted);
+}
+.cover-bottom .repo { font-family: 'DejaVu Sans Mono', monospace; font-size: 11.5px; }
+/* ================= flow content ================= */
+.main-content { padding: 58px 58px 44px; }
+.chapter-header { break-after: avoid; break-inside: avoid; margin-top: 26px; }
+.chapter-header.first { margin-top: 0; }
+.section-tag {
+    display: inline-block;
+    font-size: 12px; font-weight: 600; letter-spacing: 1px;
+    color: var(--accent);
+    border: 1px solid rgba(53,212,154,.4);
+    border-radius: 6px; padding: 3px 12px;
+    margin-bottom: 10px;
+}
+.section-title { font-size: 27px; font-weight: 800; line-height: 1.5; margin: 0 0 6px; }
+.divider {
+    height: 6px; width: 84px; border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), rgba(53,212,154,0));
+    margin: 4px 0 14px;
+}
+.body-text { color: #D7E1F2; margin: 0 0 10px; text-align: justify; }
+.body-text b { color: var(--text); }
+.lead { color: var(--text); font-size: 15.5px; }
+h3.sub {
+    break-after: avoid;
+    font-size: 16.5px; font-weight: 700;
+    margin: 16px 0 6px; color: var(--text);
+}
+h3.sub .tick { color: var(--accent); }
+/* code */
+.code {
+    font-family: 'DejaVu Sans Mono', monospace;
+    font-size: 12.3px; line-height: 1.85;
+    background: var(--panel);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 13px 17px; margin: 4px 0 12px;
+    color: #C9D6EA;
+    break-inside: avoid;
+    white-space: pre;
+    overflow-x: hidden;
+}
+.code .c  { color: #64748F; }
+.code .g  { color: var(--accent); font-weight: 700; }
+code.inline {
+    font-family: 'DejaVu Sans Mono', monospace;
+    font-size: 12px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px; padding: 1px 7px;
+    color: var(--accent);
+}
+/* tables */
+table { width: 100%; border-collapse: collapse; margin: 4px 0 14px; break-inside: avoid; font-size: 13.2px; }
+thead { display: table-header-group; }
+tr { break-inside: avoid; }
+th {
+    text-align: left; font-weight: 700;
+    color: var(--accent);
+    background: rgba(53,212,154,.08);
+    border-bottom: 1.5px solid rgba(53,212,154,.4);
+    padding: 8px 12px;
+}
+td {
+    text-align: left; color: #D7E1F2;
+    border-bottom: 1px solid var(--border);
+    padding: 7.5px 12px; vertical-align: top;
+}
+td .cmd { display: inline-block; font-family: 'DejaVu Sans Mono', monospace; font-size: 12px; color: var(--accent); }
+/* cards */
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 15px 18px; margin: 0 0 12px;
+    break-inside: avoid;
+}
+.card-title { font-weight: 700; color: var(--text); font-size: 14.5px; margin-bottom: 3px; }
+.card-title .n { color: var(--accent); font-weight: 800; }
+.card p { margin: 0; color: var(--muted); font-size: 13.2px; line-height: 1.85; text-align: justify; }
+.grid-2 { display: flex; flex-wrap: wrap; gap: 12px; max-width: 100%; margin-bottom: 12px; }
+.grid-2 .card { flex: 1 1 46%; min-width: 260px; max-width: 100%; margin: 0; }
+.grid-3 { display: flex; flex-wrap: wrap; gap: 12px; max-width: 100%; margin-bottom: 12px; }
+.grid-3 .card { flex: 1 1 30%; min-width: 180px; max-width: 100%; margin: 0; }
+.callout {
+    border-left: 3px solid var(--accent);
+    background: rgba(53,212,154,.07);
+    border-radius: 8px;
+    padding: 11px 16px; margin: 2px 0 14px;
+    font-size: 13.4px; color: #D7E1F2;
+    break-inside: avoid; text-align: justify;
+}
+.callout b { color: var(--accent); }
+/* toc grid */
+.toc-grid { display: flex; flex-wrap: wrap; gap: 10px; max-width: 100%; margin: 8px 0 4px; }
+.toc-item {
+    flex: 1 1 46%; min-width: 260px; max-width: 100%;
+    display: flex; align-items: center; gap: 12px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 9px 14px;
+    break-inside: avoid;
+}
+.toc-item .no {
+    color: var(--accent); font-weight: 800; font-size: 15px;
+    min-width: 30px; text-align: center;
+}
+.toc-item .t { font-size: 13.8px; font-weight: 600; color: #D7E1F2; }
+/* stats */
+.stats { display: flex; flex-wrap: wrap; gap: 12px; max-width: 100%; margin: 6px 0 14px; }
+.stat {
+    flex: 1 1 30%; min-width: 170px; max-width: 100%;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; text-align: center;
+    break-inside: avoid;
+}
+.stat .v { font-size: 26px; font-weight: 800; color: var(--accent); line-height: 1.4; }
+.stat .k { font-size: 12.5px; color: var(--muted); }
+/* lists */
+ul.body-list { margin: 0 0 12px; padding: 0 0 0 22px; color: #D7E1F2; }
+ul.body-list li { margin-bottom: 5px; break-inside: avoid; }
+ul.body-list li::marker { color: var(--accent); }
+/* kbd */
+.kbd {
+    display: inline-block;
+    font-family: 'DejaVu Sans Mono', monospace; font-size: 11.5px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-bottom-width: 2.5px; border-radius: 6px;
+    padding: 1px 8px; color: var(--text);
+}
+/* ================= ending ================= */
+.ending {
+    width: 720px; height: 1020px; box-sizing: border-box;
+    break-before: page;
+    overflow: hidden; position: relative;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center; padding: 60px;
+}
+.ending .big { font-size: 34px; font-weight: 800; line-height: 1.6; margin-bottom: 14px; }
+.ending .sub { color: var(--muted); font-size: 15px; max-width: 460px; line-height: 2.0; }
+.ending .repo-strip {
+    font-family: 'DejaVu Sans Mono', monospace; font-size: 13px;
+    color: var(--accent);
+    border: 1px solid rgba(53,212,154,.4); border-radius: 999px;
+    padding: 9px 22px; margin-top: 30px;
+}
+.ending .foot { position: absolute; bottom: 46px; right: 60px; left: 60px; border-top: 1px solid var(--border); padding-top: 16px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+    <div class="cover-badge"><b>SSH&nbsp;Desk</b> · Version 1.0 · Guide de l'utilisateur</div>
+
+    <div class="cover-kicker">Gestionnaire professionnel de connexions SSH pour Ubuntu</div>
+    <div class="cover-title">Guide de l'utilisateur</div>
+    <div class="cover-en">SSH Desk</div>
+    <div class="cover-sub">De l'enregistrement d'un serveur à un vrai shell interactif — en une seule commande. Interface graphique, ligne de commande et noyau partagé ; les mots de passe ne vivent que dans GNOME Keyring et le moteur SSH est l'OpenSSH de votre propre système.</div>
+
+    <div class="term">
+        <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">terminal — ubuntu</span></div>
+        <div class="term-body">
+<div><span class="p">$</span> sss add</div>
+<div class="dim">  server "Production" saved — secret stored in GNOME Keyring</div>
+<div><span class="p">$</span> sss prod</div>
+<div class="ok">  ✓ connected → root@192.168.1.1 → /var/www</div>
+<div class="dim">  root@production:/var/www# _</div>
+        </div>
+    </div>
+
+    <div class="chips">
+        <span class="chip">Terminal PTY réel</span>
+        <span class="chip">Secrets uniquement dans le trousseau</span>
+        <span class="chip">Gestionnaire de fichiers SFTP</span>
+        <span class="chip">Tunnels Local/Remote/SOCKS</span>
+        <span class="chip">Installation hors ligne via miroirs</span>
+    </div>
+
+    <div class="cover-bottom">
+        <div>Édition 1.0 — novembre 2026</div>
+        <div class="repo">github.com/hmplus28/SSH-Desk</div>
+    </div>
+</div>
+
+<div class="main-content">
+
+    <div class="chapter-header first">
+        <div class="section-tag">Sommaire</div>
+        <div class="section-title">Dans ce guide</div>
+        <div class="divider"></div>
+    </div>
+    <div class="toc-grid">
+        <div class="toc-item"><div class="no">01</div><div class="t">Découvrir SSH Desk</div></div>
+        <div class="toc-item"><div class="no">02</div><div class="t">Installation et configuration</div></div>
+        <div class="toc-item"><div class="no">03</div><div class="t">Démarrage rapide : votre premier serveur</div></div>
+        <div class="toc-item"><div class="no">04</div><div class="t">Connexion et gestion des chemins</div></div>
+        <div class="toc-item"><div class="no">05</div><div class="t">Référence complète du CLI sss</div></div>
+        <div class="toc-item"><div class="no">06</div><div class="t">L'interface graphique</div></div>
+        <div class="toc-item"><div class="no">07</div><div class="t">Le vrai terminal (PTY)</div></div>
+        <div class="toc-item"><div class="no">08</div><div class="t">Gestion des fichiers avec SFTP</div></div>
+        <div class="toc-item"><div class="no">09</div><div class="t">Clés, tunnels et commandes</div></div>
+        <div class="toc-item"><div class="no">10</div><div class="t">Le modèle de sécurité</div></div>
+        <div class="toc-item"><div class="no">11</div><div class="t">Sauvegardes et dépannage</div></div>
+    </div>
+
+    <div class="chapter-header">
+        <div class="section-tag">Chapitre 01</div>
+        <div class="section-title">Découvrir SSH Desk</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text lead">SSH Desk est un vrai produit installable pour gérer tous vos serveurs SSH sous Ubuntu — pas une démonstration. Trois modules — l'interface graphique, la ligne de commande et le noyau partagé — travaillent exactement sur une même base de données et un même magasin de secrets : enregistrez un serveur dans l'interface et connectez-vous depuis n'importe quel terminal avec <code class="inline">sss prod</code> dans la foulée, même quand l'interface graphique n'est pas du tout lancée.</p>
+    <p class="body-text">Le moteur de connexion est l'<b>OpenSSH du système lui-même</b> ; le protocole SSH n'est pas réimplémenté, le comportement de connexion est donc exactement celui d'Ubuntu. Le terminal intégré est un <b>vrai PTY</b> : couleurs, flèches, <b>Ctrl+C</b>, vim et nano fonctionnent correctement. Les mots de passe sont stockés uniquement dans <b>GNOME Keyring</b> et n'atteignent jamais la base de données, les journaux, les arguments de commande ni les variables d'environnement.</p>
+    <div class="grid-3">
+        <div class="card"><div class="card-title"><span class="n">GUI</span> — interface de bureau</div><p>PySide6 avec thèmes sombre/clair, 7 langues d'interface avec RTL complet pour le persan et l'arabe, terminal multi-onglets et gestionnaire de fichiers.</p></div>
+        <div class="card"><div class="card-title"><span class="n">CLI</span> — ligne de commande</div><p>La commande <code class="inline">sss</code> fonctionne sans l'interface graphique ; le nom de commande est configurable ; complétion bash/zsh incluse.</p></div>
+        <div class="card"><div class="card-title"><span class="n">Core</span> — noyau partagé</div><p>SQLite + SQLAlchemy avec migrations, le service Keyring, le constructeur de commandes ssh et la politique de Host Key.</p></div>
+    </div>
+    <div class="stats">
+        <div class="stat"><div class="v">3</div><div class="k">modules, un moteur</div></div>
+        <div class="stat"><div class="v">9</div><div class="k">pages dans l'interface</div></div>
+        <div class="stat"><div class="v">30+</div><div class="k">sous-commandes CLI</div></div>
+    </div>
+
+    <div class="chapter-header">
+        <div class="section-tag">Chapitre 02</div>
+        <div class="section-title">Installation et configuration</div>
+        <div class="divider"></div>
+    </div>
+    <h3 class="sub"><span class="tick">›</span> Prérequis</h3>
+    <div class="code"><span class="c"># Ubuntu 22.04 / 24.04+</span>
+sudo apt update
+sudo apt install -y openssh-client gnome-keyring libsecret-1-0 \
+     python3 python3-venv python3-pip</div>
+    <h3 class="sub"><span class="tick">›</span> Option A — installation au niveau utilisateur (recommandée, sans sudo)</h3>
+    <div class="code">git clone https://github.com/hmplus28/SSH-Desk.git
+cd SSH-Desk
+bash scripts/install.sh</div>
+    <p class="body-text">Le script vérifie Python et OpenSSH, crée un environnement virtuel dans <code class="inline">~/.local/share/ssh-desk/venv</code>, installe le paquet avec toutes ses dépendances et crée dans <code class="inline">~/.local/bin</code> les raccourcis <code class="inline">ssh-desk</code> (interface graphique), <code class="inline">ssh-desk-cli</code>, <code class="inline">ssh-desk-askpass</code> et <code class="inline">sss</code> ; la complétion bash et l'icône de l'application sont installées aussi.</p>
+    <h3 class="sub"><span class="tick">›</span> Option B — paquet DEB à l'échelle du système</h3>
+    <div class="code">bash scripts/package_deb.sh
+sudo apt install ./dist/ssh-desk_1.0.0_amd64.deb</div>
+    <p class="body-text">Le DEB installe un ensemble PyInstaller autonome sous <code class="inline">/opt/ssh-desk</code> et enregistre l'entrée de menu et l'icône système. La mise à jour se fait en installant le nouveau paquet par-dessus ; vos données et vos secrets restent intacts.</p>
+    <h3 class="sub"><span class="tick">›</span> Internet faible ou coupé : miroirs et installation hors ligne</h3>
+    <p class="body-text">Si votre réseau est instable ou si PyPI est difficile à joindre, pas d'inquiétude : chaque appel pip des scripts d'installation essaie automatiquement une <b>chaîne de miroirs</b> — un miroir injoignable est ignoré sans aucune action de votre part et le suivant est tenté. L'ordre par défaut est <b>PyPI officiel → ArvanCloud (Iran) → TUNA → Aliyun → Tencent</b>.</p>
+    <div class="code"><span class="c"># force a specific working mirror</span>
+bash scripts/install.sh --mirror-name ir    <span class="c"># ArvanCloud (Iran)</span>
+bash scripts/install.sh --mirror-name tuna  <span class="c"># TUNA (China)</span>
+
+<span class="c"># 1) download everything once (on any working network)</span>
+bash scripts/download_wheels.sh --mirror-name ir
+<span class="c"># 2) install later with NO network at all</span>
+bash scripts/install.sh --offline</div>
+    <p class="body-text">En mode <code class="inline">--offline</code>, pip n'a le droit à aucune connexion réseau et n'installe que depuis le dossier <code class="inline">vendor/wheels</code> — une coupure d'Internet en pleine installation ne peut donc plus laisser le travail à moitié fait. La même chaîne de miroirs est utilisée par <code class="inline">scripts/build.sh</code>, la construction du DEB est donc protégée des coupures elle aussi.</p>
+    <h3 class="sub"><span class="tick">›</span> Où se trouvent les fichiers importants ?</h3>
+    <table>
+        <thead><tr><th style="width:38%">Emplacement</th><th>Chemin</th></tr></thead>
+        <tbody>
+            <tr><td>Base de données de l'application</td><td><span class="cmd">~/.local/share/ssh-desk/ssh-desk.db</span></td></tr>
+            <tr><td>Paramètres</td><td><span class="cmd">~/.config/ssh-desk/config.toml</span></td></tr>
+            <tr><td>known_hosts de l'application</td><td><span class="cmd">~/.local/share/ssh-desk/known_hosts</span></td></tr>
+            <tr><td>Clés générées</td><td><span class="cmd">~/.local/share/ssh-desk/keys/</span></td></tr>
+            <tr><td>Journaux</td><td><span class="cmd">~/.local/share/ssh-desk/logs/</span></td></tr>
+            <tr><td>Mots de passe et secrets</td><td>GNOME Keyring (Secret Service)</td></tr>
+        </tbody>
+    </table>
+    <div class="callout"><b>Désinstallation :</b> <code class="inline">bash scripts/uninstall.sh</code> demande explicitement votre accord avant de supprimer données et secrets ; sans votre confirmation rien n'est effacé.</div>
+
+    <div class="chapter-header">
+        <div class="section-tag">Chapitre 03</div>
+        <div class="section-title">Démarrage rapide : votre premier serveur</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text"><b>Étape 1 — lancement :</b> exécutez <code class="inline">ssh-desk</code> pour ouvrir l'interface graphique ; ou restez entièrement dans le terminal et utilisez <code class="inline">sss add</code>.</p>
+    <p class="body-text"><b>Étape 2 — ajouter un serveur :</b> sur la page Servers, cliquez « Add server ». Saisissez le nom, l'alias (unique — c'est avec lui que vous vous connectez), l'hôte, le port, l'utilisateur et le chemin par défaut. Si vous choisissez l'authentification par mot de passe, le secret est stocké aussitôt dans GNOME Keyring — pas dans la base de données. Avant d'enregistrer, le bouton <b>Test</b> effectue une vraie connexion pour que vous sachiez que tout est correct.</p>
+    <div class="code"><span class="c"># the same thing from the terminal (interactive wizard)</span>
+sss add
+sss add --alias prod --host 192.168.1.1 --port 22 --user root \
+        --auth password --path /var/www</div>
+    <p class="body-text"><b>Étape 3 — connexion :</b> depuis n'importe quel terminal, tapez <code class="inline">sss prod</code> pour ouvrir un shell interactif au chemin par défaut. Dans l'interface graphique, un double-clic sur le serveur suffit pour ouvrir un vrai onglet de terminal.</p>
+    <div class="callout"><b>Première connexion :</b> l'empreinte de la clé d'hôte est affichée ; comparez-la avec l'administrateur du serveur et acceptez-la une fois. Si la clé d'hôte <b>change</b> plus tard, la connexion est refusée immédiatement et des conseils pour écarter une attaque MITM sont affichés.</div>
+
+    <div class="chapter-header">
+        <div class="section-tag">Chapitre 04</div>
+        <div class="section-title">Connexion et gestion des chemins</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text">Chaque serveur peut avoir un <b>chemin par défaut</b> et autant de <b>chemins enregistrés nommés</b> que voulu ; par exemple définissez une fois <code class="inline">website → /var/www/html</code> et <code class="inline">nginx → /etc/nginx</code> pour le serveur de production et sautez toujours dans ce dossier avec un seul mot :</p>
+    <div class="code">sss prod               <span class="c"># shell at the server's default path</span>
+sss prod nginx         <span class="c"># shell at the saved path named "nginx"</span>
+sss prod /var/www      <span class="c"># shell at any absolute path</span>
+sss prod --exec "uptime"           <span class="c"># run one command, no shell</span>
+sss prod --user ubuntu --port 2222 <span class="c"># per-run override (NOT saved)</span>
+sss prod --dry-run                 <span class="c"># print the exact ssh command</span></div>
+    <p class="body-text">Si le chemin demandé n'existe pas sur le serveur, le message d'erreur est clair et compréhensible — pas une déconnexion vague. Les chemins sont transmis avec un guillemetage sûr (shlex), si bien que les espaces ou caractères spéciaux dans les noms de dossiers ne posent aucun problème. Les options <code class="inline">--user</code> et <code class="inline">--port</code> ne s'appliquent qu'à cette exécution et ne sont jamais enregistrées.</p>
+    <h3 class="sub"><span class="tick">›</span> Codes de sortie du CLI</h3>
+    <table>
+        <thead><tr><th style="width:22%">Code</th><th>Signification</th></tr></thead>
+        <tbody>
+            <tr><td><span class="cmd">0</span></td><td>Opération réussie</td></tr>
+            <tr><td><span class="cmd">1</span></td><td>Erreur d'exécution (connexion, réseau, Keyring, …)</td></tr>
+            <tr><td><span class="cmd">2</span></td><td>Entrée non valide ou mauvais usage de la commande</td></tr>
+            <tr><td><span class="cmd">130</span></td><td>Interrompu par Ctrl+C</td></tr>
+        </tbody>
+    </table>
+    <p class="body-text">Ces codes rendent <code class="inline">sss</code> fiable dans vos scripts et vos automatisations ; vous pouvez par exemple vérifier en CI ou en cron que la connexion a réussi.</p>
+
+    <div class="chapter-header">
+        <div class="section-tag">Chapitre 05</div>
+        <div class="section-title">Référence complète du CLI sss</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text">Le nom de commande <code class="inline">sss</code> n'est qu'un exemple ; renommez-le avec <code class="inline">sss config cli-name cnc</code> comme vous voulez (cnc, sshgo, …) — le changement s'applique à tout le système (un nouveau raccourci dans <code class="inline">~/.local/bin</code>). Tout premier jeton qui n'est pas une sous-commande connue est interprété comme un alias de serveur : <code class="inline">sss prod</code> équivaut à <code class="inline">sss connect prod</code>.</p>
+    <h3 class="sub"><span class="tick">›</span> Serveurs</h3>
+    <table>
+        <thead><tr><th style="width:42%">Commande</th><th>Ce qu'elle fait</th></tr></thead>
+        <tbody>
+            <tr><td><span class="cmd">sss list</span></td><td>Tableau des serveurs ; filtres <span class="cmd">--group --favorites --search</span></td></tr>
+            <tr><td><span class="cmd">sss add</span></td><td>Ajout interactif ; chaque champ peut aussi être passé directement</td></tr>
+            <tr><td><span class="cmd">sss info prod</span></td><td>Détails complets ; <span class="cmd">--show-secret</span> exige de taper l'alias</td></tr>
+            <tr><td><span class="cmd">sss edit prod</span></td><td>Modifier les champs ; <span class="cmd">--set-password</span> enregistre un nouveau mot de passe</td></tr>
+            <tr><td><span class="cmd">sss delete prod</span></td><td>Suppression avec confirmation ; le secret du trousseau est purgé aussi</td></tr>
+            <tr><td><span class="cmd">sss search TERME</span></td><td>Rechercher dans nom, alias, hôte, utilisateur et description</td></tr>
+        </tbody>
+    </table>
+    <h3 class="sub"><span class="tick">›</span> Surveillance et configuration</h3>
+    <table>
+        <thead><tr><th style="width:42%">Commande</th><th>Ce qu'elle fait</th></tr></thead>
+        <tbody>
+            <tr><td><span class="cmd">sss history</span></td><td>Historique des connexions avec filtres serveur/limite/statut</td></tr>
+            <tr><td><span class="cmd">sss current</span></td><td>Sessions SSH actives et tunnels en cours</td></tr>
+            <tr><td><span class="cmd">sss config list</span></td><td>Tous les paramètres et emplacements de fichiers</td></tr>
+            <tr><td><span class="cmd">sss config set KEY VALUE</span></td><td>Modifier un paramètre</td></tr>
+            <tr><td><span class="cmd">sss config cli-name cnc</span></td><td>Renommer la commande à l'échelle du système</td></tr>
+            <tr><td><span class="cmd">sss config completions</span></td><td>Installer la complétion bash/zsh</td></tr>
+        </tbody>
+    </table>
+    <h3 class="sub"><span class="tick">›</span> Clés, tunnels et transfert de configuration</h3>
+    <table>
+        <thead><tr><th style="width:42%">Commande</th><th>Ce qu'elle fait</th></tr></thead>
+        <tbody>
+            <tr><td><span class="cmd">sss keys generate</span></td><td>Générer Ed25519/RSA/ECDSA au format OpenSSH</td></tr>
+            <tr><td><span class="cmd">sss keys import</span></td><td>Enregistrer une clé existante (avec <span class="cmd">--copy</span> vers le magasin en 0600)</td></tr>
+            <tr><td><span class="cmd">sss keys export-pub</span></td><td>Exporter la clé publique</td></tr>
+            <tr><td><span class="cmd">sss tunnel start|stop</span></td><td>Exécuter un tunnel en daemon détaché du terminal</td></tr>
+            <tr><td><span class="cmd">sss import --file ~/.ssh/config</span></td><td>Importer ssh config avec aperçu et détection des doublons</td></tr>
+            <tr><td><span class="cmd">sss export FILE.toml</span></td><td>Sauvegarde ; secrets seulement avec <span class="cmd">--include-secrets</span></td></tr>
+            <tr><td><span class="cmd">sss restore FILE.toml</span></td><td>Restaurer une sauvegarde</td></tr>
+            <tr><td><span class="cmd">sss install-cli</span></td><td>Reconstruire les raccourcis de terminal</td></tr>
+        </tbody>
+    </table>
+    <div class="callout"><b>Complétion :</b> celle de bash est installée automatiquement (sous-commandes + alias de serveurs). Pour zsh : <code class="inline">sss config completions --shell zsh --install</code>, puis ajoutez le chemin completions à <code class="inline">~/.zshrc</code>.</div>
+
+    <div class="chapter-header">
+        <div class="section-tag">Chapitre 06</div>
+        <div class="section-title">L'interface graphique</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text">La fenêtre principale comporte une barre latérale repliable avec 9 pages et une barre d'état (sessions et tunnels actifs). L'interface est disponible en 7 langues — anglais, persan, arabe, chinois, russe, espagnol et français — avec une vraie disposition de droite à gauche pour le persan et l'arabe ; le thème sombre/clair se change dans Settings.</p>
+    <table>
+        <thead><tr><th style="width:30%">Page</th><th>Rôle</th></tr></thead>
+        <tbody>
+            <tr><td>Dashboard</td><td>Vue d'ensemble des serveurs, sessions et tunnels actifs</td></tr>
+            <tr><td>Servers</td><td>Recherche, filtres groupe/étiquette/favori, duplication, test rapide</td></tr>
+            <tr><td>Ajout/Modification</td><td>Quatre onglets : général, authentification, connexion et chemins, avancé (hôte de rebond et options ssh)</td></tr>
+            <tr><td>Détails du serveur</td><td>Détails ; le mot de passe est masqué et ne se révèle qu'après avoir tapé l'alias</td></tr>
+            <tr><td>Terminal</td><td>Sessions PTY réelles multi-onglets</td></tr>
+            <tr><td>Files</td><td>Gestionnaire de fichiers SFTP à deux volets avec transfert entre serveurs</td></tr>
+            <tr><td>Clés SSH / Redirection / Commandes / Historique</td><td>Gérer clés, tunnels, commandes enregistrées et historique des connexions</td></tr>
+            <tr><td>Settings</td><td>Nom de commande CLI, thème, langue, valeurs par défaut, état du trousseau, sauvegardes et import ssh-config</td></tr>
+        </tbody>
+    </table>
+    <h3 class="sub"><span class="tick">›</span> Raccourcis clavier</h3>
+    <p class="body-text"><span class="kbd">Ctrl+1..9</span> changer de page · <span class="kbd">Ctrl+N</span> nouveau serveur · <span class="kbd">Ctrl+K</span> nouvelle session de terminal · <span class="kbd">Ctrl+Q</span> quitter.</p>
+    <div class="callout"><b>GUI et CLI toujours synchronisées :</b> les deux interfaces partagent une base de données, un trousseau et des paramètres ; un serveur créé dans l'interface graphique est aussitôt connu de <code class="inline">sss</code> dans tous les terminaux — et inversement.</div>
+
+    <div class="chapter-header">
+        <div class="section-tag">Chapitre 07</div>
+        <div class="section-title">Le vrai terminal (PTY)</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text">Chaque onglet de terminal est une vraie session PTY par-dessus OpenSSH — pas une boîte de texte. Tout ce qui est possible dans un vrai terminal est possible ici :</p>
+    <ul class="body-list">
+        <li>Couleurs, flèches, complétion Tab, et exécution de <b>vim</b>, <b>nano</b> et <b>htop</b> fonctionnent correctement.</li>
+        <li><b>Ctrl+C</b> et <b>Ctrl+D</b> interrompent et ferment les processus exactement comme un terminal système.</li>
+        <li><b>Copier :</b> sélectionnez le texte à la souris (copie automatique) ou utilisez la barre d'outils ; <b>coller :</b> clic milieu, la barre d'outils ou <span class="kbd">Ctrl+V</span> dans le terminal.</li>
+        <li><b>Redimensionnement :</b> déplacer la fenêtre informe instantanément le programme côté serveur (SIGWINCH) — les éditeurs et htop se redessinent correctement.</li>
+        <li>Chaque onglet affiche le nom du serveur et le titre de fenêtre côté serveur ; pour vous reconnecter, ouvrez simplement une nouvelle session du même serveur.</li>
+    </ul>
+    <div class="callout"><b>Confidentialité :</b> le contenu du terminal n'est jamais journalisé ; seuls l'état de connexion et sa durée sont consignés dans l'historique.</div>
+
+    <div class="chapter-header">
+        <div class="section-tag">Chapitre 08</div>
+        <div class="section-title">Gestion des fichiers avec SFTP</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text">Sur la page Files, choisissez un serveur et cliquez Connect : le volet gauche est votre système local, le droit est le serveur. Navigation par double-clic sur les dossiers, le bouton « monter » ou en éditant le chemin directement. Toutes les opérations du quotidien sont prises en charge :</p>
+    <ul class="body-list">
+        <li><b>Envoi et téléchargement</b> par glisser-déposer ou via les boutons.</li>
+        <li><b>Nouveau dossier, renommer, supprimer</b> (avec confirmation, récursif).</li>
+        <li><b>Changer les permissions</b> en forme octale (ex. 0644) — sans calcul mental.</li>
+        <li><b>Éditer les fichiers texte :</b> le fichier s'ouvre localement et, après enregistrement, un renvoi est proposé.</li>
+        <li><b>« Envoyer vers le serveur… » :</b> déplacez un fichier directement entre deux serveurs enregistrés — sans le télécharger via votre machine.</li>
+    </ul>
+    <div class="callout"><b>Si SFTP échoue mais que le terminal fonctionne :</b> le serveur a peut-être désactivé le sous-système SFTP (<code class="inline">Subsystem sftp</code> dans sshd_config) ou la clé d'hôte n'est pas encore acceptée — connectez-vous une fois via le terminal ou cliquez Test.</div>
+
+    <div class="chapter-header">
+        <div class="section-tag">Chapitre 09</div>
+        <div class="section-title">Clés, tunnels et commandes enregistrées</div>
+        <div class="divider"></div>
+    </div>
+    <h3 class="sub"><span class="tick">›</span> Clés SSH</h3>
+    <p class="body-text">Générez une clé Ed25519 (recommandée), RSA ou ECDSA au format OpenSSH standard ; la phrase secrète optionnelle de la clé est stockée dans le trousseau elle aussi. Enregistrez des clés existantes (sans copier le fichier) ou, sur votre choix explicite, copiez-les dans le magasin de l'application avec les permissions 0600. La colonne d'empreinte aide à la vérification, celle des « serveurs associés » montre qui utilise chaque clé, et « Installer sur le serveur » construit la commande <code class="inline">ssh-copy-id</code> et l'exécute dans une session de terminal.</p>
+    <div class="code">sss keys generate --name deploy --type ed25519
+sss keys import --path ~/.ssh/id_ed25519 --name personal
+sss keys export-pub deploy</div>
+    <h3 class="sub"><span class="tick">›</span> Tunnels de ports</h3>
+    <p class="body-text">Trois types de tunnels : <b>Local</b> (ex. <code class="inline">127.0.0.1:5432 → db-internal:5432</code> pour joindre une base interne), <b>Distant</b> (inverse — exposer un port d'un service local sur le serveur) et <b>Dynamique</b> (un proxy SOCKS5 tel que <code class="inline">127.0.0.1:1080</code>). Ils tournent dans un daemon indépendant — ils survivent à la fermeture de l'interface ou du CLI et leur état est visible dans <code class="inline">sss current</code>.</p>
+    <div class="code">sss tunnel db       <span class="c"># start the tunnel named "db"</span>
+sss tunnel stop db
+sss current         <span class="c"># live sessions + running tunnels</span></div>
+    <h3 class="sub"><span class="tick">›</span> Commandes enregistrées</h3>
+    <p class="body-text">Enregistrez les commandes fréquentes par serveur ou globalement (nom, commande, catégorie). Les commandes sensibles marquées « confirmation requise » demandent avant de s'exécuter. Lancez-les depuis la page Commands de l'interface ou avec <code class="inline">sss prod --exec "&lt;command&gt;"</code> dans le terminal.</p>
+
+    <div class="chapter-header">
+        <div class="section-tag">Chapitre 10</div>
+        <div class="section-title">Le modèle de sécurité</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text">SSH Desk est conçu pour conserver les identifiants de serveurs de production et repose du début à la fin sur un principe : <b>les secrets ne vivent que dans le Secret Service</b>. Les contrôles les plus importants :</p>
+    <div class="grid-2">
+        <div class="card"><div class="card-title"><span class="n">1</span> — Mots de passe uniquement dans GNOME Keyring</div><p>La base de données ne garde qu'une référence sans secret (JSON) ; le mot de passe lui-même n'atteint jamais SQLite (vérifié par des tests automatisés).</p></div>
+        <div class="card"><div class="card-title"><span class="n">2</span> — askpass sécurisé, pas sshpass</div><p>OpenSSH s'exécute avec <code class="inline">SSH_ASKPASS_REQUIRE=force</code> et un assistant sécurisé qui lit le secret « par référence » depuis le trousseau ; le mot de passe n'apparaît jamais dans argv, l'environnement, les journaux ou les fichiers temporaires.</p></div>
+        <div class="card"><div class="card-title"><span class="n">3</span> — Clés d'hôte toujours strictes</div><p><code class="inline">StrictHostKeyChecking=yes</code> est définitif dans le constructeur de commandes et impossible à désactiver ; hôte inconnu → dialogue d'empreinte ; clé modifiée → alerte MITM et conseils <code class="inline">ssh-keygen -R</code>.</p></div>
+        <div class="card"><div class="card-title"><span class="n">4</span> — Résistant aux injections</div><p>Tous les appels subprocess utilisent des tableaux d'arguments sans shell=True ; les chemins distants sont guillemés avec shlex.quote et toutes les entrées sont validées par Pydantic.</p></div>
+    </div>
+    <h3 class="sub"><span class="tick">›</span> Autres contrôles</h3>
+    <ul class="body-list">
+        <li>Permissions des fichiers : base et configuration 0600, dossiers de données 0700, clés privées 0600.</li>
+        <li>Le journaliseur nettoie les motifs <code class="inline">password=</code>, <code class="inline">secret=</code> et les secrets enregistrés à l'exécution.</li>
+        <li>Révéler/copier un mot de passe exige de taper l'alias du serveur ; le presse-papiers s'efface automatiquement après 30 secondes.</li>
+        <li>Les opérations sensibles — suppression d'un serveur, suppression récursive de fichiers, purge totale des données (taper PURGE) — demandent toujours confirmation.</li>
+        <li>Aucun daemon ne tourne en root ; l'interface graphique et le CLI n'ont jamais besoin de sudo.</li>
+        <li>La génération de clés est entièrement intra-processus ; la phrase secrète n'atteint jamais argv ni les fichiers temporaires.</li>
+        <li>Export/sauvegarde sans secrets par défaut ; inclure les secrets est optionnel avec un avertissement explicite.</li>
+    </ul>
+
+    <div class="chapter-header">
+        <div class="section-tag">Chapitre 11</div>
+        <div class="section-title">Sauvegardes, transfert et dépannage</div>
+        <div class="divider"></div>
+    </div>
+    <h3 class="sub"><span class="tick">›</span> Sauvegarde et restauration</h3>
+    <div class="code">sss backup backup.toml                  <span class="c"># no secrets by default</span>
+sss restore backup.toml
+sss export full.toml --include-secrets  <span class="c"># opt-in + warning</span>
+sss import --file ~/.ssh/config         <span class="c"># preview, then: --apply</span></div>
+    <p class="body-text">L'import depuis <code class="inline">~/.ssh/config</code> se fait avec aperçu et détection des serveurs en doublon ; l'export TOML sert à transférer la configuration vers une autre machine et ne contient aucun secret tant que vous ne le demandez pas explicitement.</p>
+    <h3 class="sub"><span class="tick">›</span> Erreurs courantes et solutions</h3>
+    <table>
+        <thead><tr><th style="width:44%">Symptôme</th><th>Solution</th></tr></thead>
+        <tbody>
+            <tr><td><span class="cmd">sss: command not found</span></td><td>Ajoutez <span class="cmd">~/.local/bin</span> au PATH ou lancez <span class="cmd">sss install-cli</span></td></tr>
+            <tr><td>« Secret Service is not available »</td><td><span class="cmd">sudo apt install gnome-keyring libsecret-1-0</span> puis déconnectez/reconnectez une fois</td></tr>
+            <tr><td>Le trousseau est verrouillé</td><td>Déverrouillez-le une fois ; l'application demande aussi de façon interactive quand c'est possible</td></tr>
+            <tr><td>Host key changed</td><td>Seulement après vérification : <span class="cmd">ssh-keygen -R "[host]:port"</span> puis acceptez à nouveau</td></tr>
+            <tr><td>Permission denied</td><td>Mot de passe : <span class="cmd">sss edit prod --set-password</span> · Clé : <span class="cmd">sss keys list</span></td></tr>
+            <tr><td>L'interface ne s'ouvre pas</td><td><span class="cmd">ssh-desk 2>&amp;1 | tail -20</span> ; installez les bibliothèques Qt ; Wayland : <span class="cmd">QT_QPA_PLATFORM=xcb</span></td></tr>
+            <tr><td>Port de tunnel occupé</td><td><span class="cmd">ss -tlnp | grep &lt;port&gt;</span> puis <span class="cmd">sss tunnel stop</span></td></tr>
+        </tbody>
+    </table>
+    <div class="callout"><b>Réinitialisation complète :</b> <code class="inline">sss uninstall-data</code> — vous devez taper PURGE pour effacer les données et les secrets du trousseau.</div>
+
+</div>
+
+<div class="ending">
+    <div class="glow g1"></div>
+    <div class="big">Connexions sûres, toujours à portée de main.</div>
+    <div class="sub">SSH Desk est un logiciel libre sous licence MIT. Si ce guide vous a été utile, rendez-vous sur le dépôt GitHub pour signaler des problèmes ou proposer des fonctionnalités.</div>
+    <div class="repo-strip">github.com/hmplus28/SSH-Desk</div>
+    <div class="foot">
+        <div>SSH Desk — Guide de l'utilisateur · Édition 1.0</div>
+        <div>MIT License</div>
+    </div>
+</div>
+
+</body>
+</html>

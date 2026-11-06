@@ -39,6 +39,30 @@ All notable changes are documented here. Format based on
 - **Docs**: README (EN/FA quick start), Installation, User Guide, CLI
   Reference, Architecture, Security, Development, Troubleshooting, Changelog.
 
+## [1.0.2] - 2026-11-07
+
+### Added
+- **7-language application** (GUI + CLI): English, Persian, Arabic, Chinese,
+  Russian, Spanish, French.
+  - `ssh_desk.i18n` shared strings module (288 keys x 7 languages, single
+    source of truth) with `ssh_desk.gui.i18n` kept as a compatible re-export.
+  - RTL layout for Persian **and** Arabic; language picker in Settings shows
+    all seven languages with native names.
+  - CLI messages and table headers localized; language follows the shared
+    settings (`config.toml`) at startup; CJK-aware column widths in CLI
+    tables; locale suffixes (`fa_IR`, `zh_CN.UTF-8`) accepted.
+- **User-guide PDFs in 7 languages** (`docs/SSH-Desk-User-Guide-*.pdf`):
+  en, fa (updated to reflect the 7-language UI), ar, zh, ru, es, fr —
+  same illustrated dark design; Arabic and Persian use full RTL layout.
+- **Discoverability**: `llms.txt` and `llms-full.txt` for AI assistants,
+  FAQ section in the README, richer repository metadata (description,
+  topics) for search engines.
+
+### Tests
+- `tests/test_i18n.py`: completeness (7 languages), placeholder parity,
+  RTL rules, locale parsing, GUI-shim state sharing — 65 tests green,
+  ruff clean, mypy clean.
+
 [1.0.0]: https://github.com/hmplus28/SSH-Desk/releases/tag/v1.0.0
 
 ## [1.0.1] - 2026-11-07

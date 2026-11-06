@@ -313,7 +313,7 @@ ul.body-list li::marker { color: var(--accent); }
     <p class="body-text lead">SSH Desk یک محصول واقعی و قابل‌نصب برای مدیریت همهٔ سرورهای SSH شما روی اوبونتو است؛ نه یک نمونهٔ نمایشی. سه ماژول — رابط گرافیکی، خط فرمان و هستهٔ مرکزی — دقیقاً روی یک دیتابیس و یک مخزن رمز مشترک کار می‌کنند: سروری را در GUI ثبت می‌کنید و در همان لحظه از هر ترمینالی با <code class="inline">sss prod</code> به آن وصل می‌شوید؛ حتی وقتی GUI اصلاً در حال اجرا نیست.</p>
     <p class="body-text">موتور اتصال، همان <b>OpenSSH سیستم</b> است؛ پروتکل SSH دوباره پیاده‌سازی نشده تا رفتار اتصال دقیقاً مثل خودِ اوبونتو باشد. ترمینال داخلی یک <b>PTY واقعی</b> است: رنگ‌ها، کلیدهای جهت‌دار، <b>Ctrl+C</b> و اجرای vim و nano همه به‌درستی کار می‌کنند. رمزهای عبور فقط در <b>GNOME Keyring</b> ذخیره می‌شوند و هرگز به دیتابیس، لاگ، آرگومان دستور یا متغیر محیطی راه نمی‌یابند.</p>
     <div class="grid-3">
-        <div class="card"><div class="card-title"><span class="n">GUI</span> — رابط گرافیکی</div><p>PySide6 با تم تیره/روشن، دو زبانهٔ فارسی/انگلیسی با RTL کامل، ترمینال چندزبانه و مدیریت فایل.</p></div>
+        <div class="card"><div class="card-title"><span class="n">GUI</span> — رابط گرافیکی</div><p>PySide6 با تم تیره/روشن، ۷ زبان رابط کاربری (RTL کامل برای فارسی و عربی)، ترمینال چندزبانه و مدیریت فایل.</p></div>
         <div class="card"><div class="card-title"><span class="n">CLI</span> — خط فرمان</div><p>دستور <code class="inline">sss</code> بدون نیاز به GUI؛ نام دستور قابل تغییر؛ تکمیل خودکار bash/zsh.</p></div>
         <div class="card"><div class="card-title"><span class="n">Core</span> — هستهٔ مشترک</div><p>SQLite + SQLAlchemy با مهاجرت‌ها، سرویس Keyring، سازندهٔ دستور ssh و سیاست Host Key.</p></div>
     </div>
@@ -462,7 +462,7 @@ sss prod --dry-run                 <span class="c"># print the exact ssh command
         <div class="section-title">رابط گرافیکی</div>
         <div class="divider"></div>
     </div>
-    <p class="body-text">پنجرهٔ اصلی یک نوار کناری جمع‌شونده با ۹ صفحه و یک نوار وضعیت (نشست‌ها و تونل‌های فعال) دارد. زبان برنامه فارسی/انگلیسی و راست‌به‌چپ واقعی است و تم تیره/روشن از Settings تغییر می‌کند.</p>
+    <p class="body-text">پنجرهٔ اصلی یک نوار کناری جمع‌شونده با ۹ صفحه و یک نوار وضعیت (نشست‌ها و تونل‌های فعال) دارد. زبان برنامه در ۷ زبان — انگلیسی، فارسی، عربی، چینی، روسی، اسپانیایی و فرانسوی — ارائه می‌شود و برای فارسی و عربی چیدمان راست‌به‌چپ واقعی دارد؛ تم تیره/روشن هم از Settings تغییر می‌کند.</p>
     <table>
         <thead><tr><th style="width:30%">صفحه</th><th>کارکرد</th></tr></thead>
         <tbody>

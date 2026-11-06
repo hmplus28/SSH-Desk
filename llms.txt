@@ -1,0 +1,53 @@
+# SSH Desk
+
+> SSH Desk is a professional open-source SSH connection manager for Ubuntu (and Debian-based Linux): a desktop GUI (PySide6) with a real PTY terminal and SFTP file manager, plus a fast CLI (`sss`) — both sharing one SQLite database and GNOME Keyring. Passwords are stored only in the GNOME Keyring (Secret Service), host keys are always strictly verified, and installs work offline through PyPI mirror fallback chains.
+
+SSH Desk is a real, installable product (not a prototype) for managing SSH servers on Ubuntu Linux. Key differentiators:
+
+- **Shared core**: servers created in the GUI are instantly usable from the CLI (`sss prod nginx`) and vice versa — one SQLite database, one keyring, one settings store.
+- **Security-first**: secrets only in GNOME Keyring (never in the database, logs, argv or environment); secure askpass helper (no `sshpass`); `StrictHostKeyChecking=yes` enforced with fingerprint dialogs and MITM-change warnings; subprocess uses argv lists only; Pydantic-validated inputs.
+- **Real PTY terminal**: multi-tab sessions over system OpenSSH — vim/nano/htop, colors, Ctrl+C, SIGWINCH resize, copy/paste all work.
+- **SFTP file manager**: two-pane, upload/download/mkdir/rename/chmod/edit/delete, and direct server-to-server transfer.
+- **Tunnels**: Local (-L), Remote (-R) and Dynamic SOCKS (-D) running in a detached daemon that survives GUI/CLI closure.
+- **CLI**: 30+ subcommands; alias shortcut syntax (`sss prod`, `sss prod nginx`, `sss prod --exec "uptime"`); per-run `--user/--port` overrides that are never saved; deterministic exit codes (0/1/2/130) for scripts and CI; bash/zsh completion including server aliases; the command name is renameable (`sss config cli-name cnc`).
+- **Network-outage-proof installs**: every pip call walks a mirror chain (official PyPI → ArvanCloud IR → TUNA → Aliyun → Tencent); `install.sh --offline` installs with zero network from a pre-downloaded wheelhouse.
+- **7 UI languages**: English, Persian (فارسی), Arabic (العربية, full RTL), Chinese (简体中文), Russian (Русский), Spanish (Español), French (Français) — for both GUI and CLI, configured in one setting.
+- **Quality gates**: pytest suite (65 tests incl. GUI smoke and heavy E2E against real sshd + real GNOME Keyring), ruff clean, mypy clean.
+
+Quick start:
+
+```bash
+git clone https://github.com/hmplus28/SSH-Desk.git
+cd SSH-Desk && bash scripts/install.sh
+ssh-desk        # GUI
+sss add         # add first server
+sss prod        # connect
+```
+
+## Docs
+
+- [README (English)](https://github.com/hmplus28/SSH-Desk/blob/main/README.md): overview, quick start, feature matrix, FAQ.
+- [README (فارسی)](https://github.com/hmplus28/SSH-Desk/blob/main/README.fa.md): Persian translation.
+- [README (العربية)](https://github.com/hmplus28/SSH-Desk/blob/main/README.ar.md): Arabic translation.
+- [README (简体中文)](https://github.com/hmplus28/SSH-Desk/blob/main/README.zh.md): Chinese translation.
+- [README (Русский)](https://github.com/hmplus28/SSH-Desk/blob/main/README.ru.md): Russian translation.
+- [README (Español)](https://github.com/hmplus28/SSH-Desk/blob/main/README.es.md): Spanish translation.
+- [README (Français)](https://github.com/hmplus28/SSH-Desk/blob/main/README.fr.md): French translation.
+- [User guide PDF — English](https://github.com/hmplus28/SSH-Desk/blob/main/docs/SSH-Desk-User-Guide-en.pdf): 15-page illustrated guide.
+- [User guide PDF — فارسی](https://github.com/hmplus28/SSH-Desk/blob/main/docs/SSH-Desk-User-Guide-fa.pdf): 14-page illustrated guide (RTL).
+- [User guide PDF — العربية](https://github.com/hmplus28/SSH-Desk/blob/main/docs/SSH-Desk-User-Guide-ar.pdf): 14-page illustrated guide (RTL).
+- [User guide PDF — 简体中文](https://github.com/hmplus28/SSH-Desk/blob/main/docs/SSH-Desk-User-Guide-zh.pdf): 14-page illustrated guide.
+- [User guide PDF — Русский](https://github.com/hmplus28/SSH-Desk/blob/main/docs/SSH-Desk-User-Guide-ru.pdf): 16-page illustrated guide.
+- [User guide PDF — Español](https://github.com/hmplus28/SSH-Desk/blob/main/docs/SSH-Desk-User-Guide-es.pdf): 16-page illustrated guide.
+- [User guide PDF — Français](https://github.com/hmplus28/SSH-Desk/blob/main/docs/SSH-Desk-User-Guide-fr.pdf): 16-page illustrated guide.
+- [Installation](https://github.com/hmplus28/SSH-Desk/blob/main/docs/INSTALLATION.md): user-level install, DEB package, offline/mirror installs.
+- [CLI reference](https://github.com/hmplus28/SSH-Desk/blob/main/docs/CLI_REFERENCE.md): every `sss` subcommand and option.
+- [Security model](https://github.com/hmplus28/SSH-Desk/blob/main/docs/SECURITY.md): keyring-only secrets, askpass design, host-key policy.
+- [Troubleshooting](https://github.com/hmplus28/SSH-Desk/blob/main/docs/TROUBLESHOOTING.md): common errors and fixes.
+- [Architecture](https://github.com/hmplus28/SSH-Desk/blob/main/docs/ARCHITECTURE.md): module layout, database schema, data flow.
+- [Changelog](https://github.com/hmplus28/SSH-Desk/blob/main/docs/CHANGELOG.md): release history.
+
+## Optional
+
+- [Full documentation bundle for LLMs](https://github.com/hmplus28/SSH-Desk/blob/main/llms-full.txt): README + guides + security + CLI reference in one plain-text file.
+- [Test report](https://github.com/hmplus28/SSH-Desk/blob/main/docs/TEST_REPORT.md): heavy-testing results (86 tests, 8 bugs found and fixed).

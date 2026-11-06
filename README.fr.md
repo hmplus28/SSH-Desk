@@ -15,7 +15,7 @@ SSH Desk est un produit réel et installable (pas un prototype) pour gérer tous
 - 🔐 **Sécurité d'abord** : vérification stricte des host keys avec boîte de dialogue d'empreinte ; les secrets n'atteignent jamais la base de données/logs/argv ; sans `sshpass` ni `StrictHostKeyChecking=no`
 - 🌐 **Résistant aux coupures réseau** : chaîne de miroirs PyPI (officiel → ArvanCloud (Iran) → TUNA → Aliyun → Tencent) et installation entièrement hors ligne via `install.sh --offline`
 
-📄 **[Guide utilisateur complet (PDF, en persan)](docs/SSH-Desk-User-Guide-fa.pdf)** — 14 pages illustrées : installation hors ligne, référence CLI complète, terminal, SFTP, tunnels et modèle de sécurité.
+📄 **[Guide utilisateur complet (PDF, en français)](docs/SSH-Desk-User-Guide-fr.pdf)** — 16 pages illustrées : installation hors ligne, référence CLI complète, terminal, SFTP, tunnels et modèle de sécurité. Le guide existe aussi en 6 autres langues : [English](docs/SSH-Desk-User-Guide-en.pdf) · [فارسی](docs/SSH-Desk-User-Guide-fa.pdf) · [العربية](docs/SSH-Desk-User-Guide-ar.pdf) · [简体中文](docs/SSH-Desk-User-Guide-zh.pdf) · [Русский](docs/SSH-Desk-User-Guide-ru.pdf) · [Español](docs/SSH-Desk-User-Guide-es.pdf)
 
 ---
 

@@ -45,16 +45,27 @@ def hint(message: str) -> None:
     print(paint(message, DIM))
 
 
+def _disp_width(text: str) -> int:
+    """Terminal display width (CJK/full-width chars count as 2 columns)."""
+    from unicodedata import east_asian_width
+
+    return sum(2 if east_asian_width(ch) in ("W", "F") else 1 for ch in text)
+
+
+def _pad(text: str, width: int) -> str:
+    return text + " " * max(0, width - _disp_width(text))
+
+
 def fmt_table(headers: list[str], rows: list[list[str]], indent: str = "  ") -> str:
-    """Render a plain-text table with computed column widths."""
+    """Render a plain-text table with computed column widths (CJK-aware)."""
     rows = [[("" if c is None else str(c)) for c in row] for row in rows]
-    widths = [len(h) for h in headers]
+    widths = [_disp_width(h) for h in headers]
     for row in rows:
         for i, cell in enumerate(row):
-            widths[i] = max(widths[i], len(cell))
-    line = indent + "  ".join(h.ljust(widths[i]) for i, h in enumerate(headers))
+            widths[i] = max(widths[i], _disp_width(cell))
+    line = indent + "  ".join(_pad(h, widths[i]) for i, h in enumerate(headers))
     separator = indent + "  ".join("-" * w for w in widths)
-    body = [indent + "  ".join(c.ljust(widths[i]) for i, c in enumerate(row)) for row in rows]
+    body = [indent + "  ".join(_pad(c, widths[i]) for i, c in enumerate(row)) for row in rows]
     return "\n".join([line, separator, *body])
 
 

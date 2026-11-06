@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
 )
 
 from ssh_desk.core.exceptions import SshDeskError
-from ssh_desk.gui.i18n import tr
+from ssh_desk.gui.i18n import LANGS, LANGUAGE_NAMES, tr
 from ssh_desk.gui.widgets_common import ConfirmDialog, Page
 
 
@@ -39,8 +39,8 @@ class SettingsPage(Page):
         self.theme_combo.currentIndexChanged.connect(self._theme_changed)
         form.addRow(tr("theme"), self.theme_combo)
         self.lang_combo = QComboBox()
-        self.lang_combo.addItem("English", "en")
-        self.lang_combo.addItem("فارسی", "fa")
+        for code in LANGS:
+            self.lang_combo.addItem(LANGUAGE_NAMES[code], code)
         self.lang_combo.currentIndexChanged.connect(self._lang_changed)
         form.addRow(tr("language"), self.lang_combo)
         self.font_spin = QSpinBox()

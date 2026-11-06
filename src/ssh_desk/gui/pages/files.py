@@ -345,7 +345,7 @@ class FilesPage(Page):
         try:
             mode_value = int(mode, 8)
         except ValueError:
-            self.main.toast_error("Invalid octal mode")
+            self.main.toast_error(tr("invalid_octal"))
             return
         job = lambda: self.session.chmod(self._remote_full(entry.name), mode_value)
         self._with_progress("chmod", job, lambda _r: self._load_remote())
@@ -386,7 +386,7 @@ class FilesPage(Page):
             return
         servers = [s for s in self.ctx.servers.list_servers() if not self.server or s.id != self.server.id]
         if not servers:
-            self.main.toast_error("No other server available")
+            self.main.toast_error(tr("no_other_server"))
             return
         names = [s.alias for s in servers]
         name, ok_flag = QInputDialog.getItem(self, tr("transfer_to"), tr("select_server"), names, 0, False)

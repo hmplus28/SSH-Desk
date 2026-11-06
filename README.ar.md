@@ -15,7 +15,7 @@ SSH Desk منتج حقيقي قابل للتثبيت (وليس نموذجًا ت
 - 🔐 **الأمان أولًا**: تحقق صارم من مفتاح المضيف مع نافذة البصمة؛ الأسرار لا تصل أبدًا إلى قاعدة البيانات/السجلات/الوسائط؛ لا sshpass ولا `StrictHostKeyChecking=no`
 - 🌐 **مقاوم لانقطاع الإنترنت**: سلسلة مرايا PyPI (الرسمي ← ArvanCloud إيران ← TUNA ← Aliyun ← Tencent) وتثبيت غير متصل بالكامل عبر `install.sh --offline`
 
-📄 **[دليل المستخدم الكامل (PDF)](docs/SSH-Desk-User-Guide-fa.pdf)** — 14 صفحة مصورة (باللغة الفارسية) تشمل التثبيت دون اتصال، مرجع CLI الكامل، الطرفية، SFTP، الأنفاق، ونموذج الأمان.
+📄 **[دليل المستخدم الكامل (PDF بالعربية)](docs/SSH-Desk-User-Guide-ar.pdf)** — 14 صفحة مصورة تشمل التثبيت دون اتصال، مرجع CLI الكامل، الطرفية، SFTP، الأنفاق، ونموذج الأمان. الدليل متوفر بـ 7 لغات أخرى أيضًا: [English](docs/SSH-Desk-User-Guide-en.pdf) · [فارسی](docs/SSH-Desk-User-Guide-fa.pdf) · [简体中文](docs/SSH-Desk-User-Guide-zh.pdf) · [Русский](docs/SSH-Desk-User-Guide-ru.pdf) · [Español](docs/SSH-Desk-User-Guide-es.pdf) · [Français](docs/SSH-Desk-User-Guide-fr.pdf)
 
 ---
 

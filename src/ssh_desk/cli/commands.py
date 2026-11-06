@@ -26,6 +26,7 @@ from ssh_desk.cli.output import (
     warn,
 )
 from ssh_desk.core.exceptions import SshDeskError
+from ssh_desk.i18n import set_language, tr
 
 log = logging.getLogger("ssh_desk.cli")
 
@@ -47,12 +48,21 @@ app = typer.Typer(
 _ctx = None
 
 
+_lang_applied = False
+
+
 def get_ctx():
-    global _ctx
+    global _ctx, _lang_applied
     if _ctx is None:
         from ssh_desk.core.application import AppContext
 
         _ctx = AppContext.instance()
+    if not _lang_applied:
+        _lang_applied = True
+        try:
+            set_language(_ctx.settings.get("language", "en"))
+        except Exception:  # settings unavailable -> stay in English
+            pass
     return _ctx
 
 
@@ -74,12 +84,12 @@ def list_cmd(
     if group:
         obj = next((g for g in ctx.servers.list_groups() if g.name == group), None)
         if not obj:
-            err(f"Group '{group}' not found")
+            err(tr("cli_group_not_found", group=group))
             raise typer.Exit(1)
         group_id = obj.id
     servers = ctx.servers.list_servers(search=search, group_id=group_id, favorites_only=favorites)
     if not servers:
-        info("No servers yet. Add one with: sss add")
+        info(tr("cli_no_servers_add", cmd=ctx.settings.cli_command_name))
         return
     active = {s["alias"] for s in _session_scan()}
     rows = [
@@ -96,7 +106,10 @@ def list_cmd(
         ]
         for s in servers
     ]
-    print(fmt_table(["FAV", "ALIAS", "NAME", "HOST", "PORT", "USER", "GROUP", "AUTH", "STATUS"], rows))
+    print(fmt_table([
+        tr("h_fav"), tr("h_alias"), tr("h_name"), tr("h_host"), tr("h_port"),
+        tr("h_user"), tr("h_group"), tr("h_auth"), tr("h_status"),
+    ], rows))
 
 
 def _session_scan():
@@ -168,10 +181,10 @@ def add(
     except Exception as exc:
         _print_error(exc)
         raise typer.Exit(1)
-    ok(f"Server '{server.alias}' saved (id={server.id})")
+    ok(tr("cli_server_saved", alias=server.alias, id=server.id))
     if secret:
-        ok("Password stored securely in the system keyring (Secret Service)")
-    hint(f"Connect now:  {ctx.settings.cli_command_name} {server.alias}")
+        ok(tr("cli_password_stored"))
+    hint(tr("cli_connect_now", cmd=ctx.settings.cli_command_name, alias=server.alias))
 
 
 def _server_input(**kwargs):
@@ -230,17 +243,17 @@ def info_cmd(
     ]
     if server.description:
         rows.append(["Description", server.description])
-    print(fmt_table(["FIELD", "VALUE"], rows))
+    print(fmt_table([tr("h_field"), tr("h_value")], rows))
     if server.paths:
         print()
         print(fmt_table(
-            ["PATH NAME", "REMOTE PATH", "DEFAULT"],
+            [tr("h_path_name"), tr("h_remote_path"), tr("h_default")],
             [[p.name, p.path, "*" if p.is_default else ""] for p in server.paths],
         ))
     if show_secret:
-        answer = typer.prompt(f"Type the alias '{server.alias}' to confirm revealing the password")
+        answer = typer.prompt(tr("cli_reveal_prompt", alias=server.alias))
         if answer.strip().lower() != server.alias:
-            err("Confirmation failed - password not shown")
+            err(tr("cli_confirmation_failed"))
             raise typer.Exit(1)
         try:
             secret = ctx.credentials.get_server_password(server)
@@ -248,9 +261,9 @@ def info_cmd(
             _print_error(exc)
             raise typer.Exit(1)
         if secret:
-            print(paint("Password: ", BOLD) + secret)
+            print(paint(tr("cli_password_label"), BOLD) + secret)
         else:
-            warn("No password stored for this server")
+            warn(tr("cli_no_password"))
 
 
 # ===================================================================== test
@@ -271,7 +284,7 @@ def test(
         _print_error(exc)
         raise typer.Exit(1)
     if result.ok:
-        ok(f"{server.alias}: connection successful ({result.latency_ms} ms)")
+        ok(tr("cli_test_ok", alias=server.alias, ms=result.latency_ms))
     else:
         err(f"{server.alias}: {result.message}")
         raise typer.Exit(1)
@@ -348,7 +361,7 @@ def edit(
             tags=updates.get("tags", ...),
             **kwargs,
         )
-        ok(f"Server '{server.alias}' updated")
+        ok(tr("cli_server_updated", alias=server.alias))
     except SshDeskError as exc:
         _print_error(exc)
         raise typer.Exit(1)
@@ -362,22 +375,22 @@ def _interactive_edit(ctx, server):
         ("username", server.username), ("auth_type", server.auth_type),
         ("default_path", server.default_path or ""), ("description", server.description or ""),
     ]
-    info("Press Enter to keep the current value. Type 'done' (or empty on field name) to finish.")
+    info(tr("cli_edit_prompt"))
     updates = {}
     while True:
         for i, (field, current) in enumerate(fields, 1):
             print(f"  {i}. {field} = {current}")
-        choice = typer.prompt("Field number to edit (empty=finish)", default="", show_default=False)
+        choice = typer.prompt(tr("cli_field_number"), default="", show_default=False)
         if not choice.strip():
             break
         if not choice.strip().isdigit() or not (1 <= int(choice) <= len(fields)):
-            warn("Invalid selection")
+            warn(tr("cli_invalid_selection"))
             continue
         field, current = fields[int(choice) - 1]
-        new_value = typer.prompt(f"New value for '{field}'", default=str(current), show_default=True)
+        new_value = typer.prompt(tr("cli_new_value", field=field), default=str(current), show_default=True)
         updates[field] = new_value
     if not updates:
-        info("Nothing changed")
+        info(tr("cli_nothing_changed"))
         return
     data = ServerInput(
         name=updates.get("name", server.name),
@@ -394,7 +407,7 @@ def _interactive_edit(ctx, server):
     if "description" in updates:
         kwargs["description"] = updates["description"]
     ctx.servers.update(server.id, data, **kwargs)
-    ok(f"Server '{server.alias}' updated")
+    ok(tr("cli_server_updated", alias=server.alias))
 
 
 # ===================================================================== delete
@@ -409,13 +422,13 @@ def delete(
         server = ctx.servers.require_by_alias(alias)
         if not yes:
             confirm = typer.prompt(
-                f"Delete server '{server.alias}' ({server.username}@{server.host}) and its stored secret? Type 'DELETE' to confirm"
+                tr("cli_delete_confirm", alias=server.alias, user=server.username, host=server.host)
             )
             if confirm.strip() != "DELETE":
-                info("Aborted")
+                info(tr("cli_aborted"))
                 return
         ctx.servers.delete(server.id)
-        ok(f"Server '{alias}' deleted (secret removed from keyring)")
+        ok(tr("cli_server_deleted", alias=alias))
     except SshDeskError as exc:
         _print_error(exc)
         raise typer.Exit(1)
@@ -466,10 +479,12 @@ def search(term: str = typer.Argument(...)):
     ctx = get_ctx()
     servers = ctx.servers.list_servers(search=term)
     if not servers:
-        info(f"No servers match '{term}'")
+        info(tr("cli_search_nomatch", term=term))
         return
     rows = [[s.alias, s.name, s.host, s.port, s.username, ", ".join(s.tags or [])] for s in servers]
-    print(fmt_table(["ALIAS", "NAME", "HOST", "PORT", "USER", "TAGS"], rows))
+    print(fmt_table([
+        tr("h_alias"), tr("h_name"), tr("h_host"), tr("h_port"), tr("h_user"), tr("h_tags"),
+    ], rows))
 
 
 # ===================================================================== history
@@ -490,7 +505,7 @@ def history(
             raise typer.Exit(1)
     rows_src = ctx.history.list(server_id=server_id, status=status, limit=limit)
     if not rows_src:
-        info("No connection history yet")
+        info(tr("cli_no_history"))
         return
     rows = []
     for h in rows_src:
@@ -503,7 +518,10 @@ def history(
             paint(h.status, color) if color else h.status,
             (h.error_message or "-")[:60],
         ])
-    print(fmt_table(["SERVER", "CONNECTED", "DISCONNECTED", "DURATION", "STATUS", "ERROR"], rows))
+    print(fmt_table([
+        tr("h_server"), tr("h_connected"), tr("h_disconnected"),
+        tr("h_duration"), tr("h_status"), tr("h_error"),
+    ], rows))
 
 
 # ===================================================================== current
@@ -513,17 +531,17 @@ def current():
     ctx = get_ctx()
     sessions = _session_scan()
     if sessions:
-        print(paint("Active SSH sessions:", BOLD))
-        print(fmt_table(["PID", "ALIAS"], [[str(s["pid"]), s["alias"]] for s in sessions]))
+        print(paint(tr("cli_active_sessions"), BOLD))
+        print(fmt_table([tr("h_pid"), tr("h_alias")], [[str(s["pid"]), s["alias"]] for s in sessions]))
     else:
-        info("No active SSH sessions")
+        info(tr("cli_no_sessions"))
     ctx.tunnels.refresh_all()
     tunnels = [t for t in ctx.tunnels.list() if t.status == "running"]
     if tunnels:
         print()
-        print(paint("Running tunnels:", BOLD))
+        print(paint(tr("cli_running_tunnels"), BOLD))
         print(fmt_table(
-            ["NAME", "SERVER", "TYPE", "BINDING"],
+            [tr("h_name"), tr("h_server"), tr("h_type"), tr("h_binding")],
             [[t.name, ctx.servers.get(t.server_id).alias, t.tunnel_type, _tunnel_binding(t)] for t in tunnels],
         ))
 
@@ -544,11 +562,11 @@ def config_list():
     """Show all settings."""
     ctx = get_ctx()
     data = ctx.settings.as_dict()
-    print(fmt_table(["KEY", "VALUE"], sorted([k, str(v)] for k, v in data.items())))
+    print(fmt_table([tr("h_key"), tr("h_value")], sorted([k, str(v)] for k, v in data.items())))
     print()
-    info(f"Config file: {ctx.settings.path}")
-    info(f"Database:    {ctx.db.path}")
-    info(f"Data dir:    {ctx.data_dir}")
+    info(tr("cli_config_file", path=ctx.settings.path))
+    info(tr("cli_database", path=ctx.db.path))
+    info(tr("cli_data_dir", path=ctx.data_dir))
 
 
 @config_app.command("get")
@@ -584,8 +602,8 @@ def config_cli_name(name: str = typer.Argument(..., help="New terminal command, 
         raise typer.Exit(1)
     ctx.settings.set("cli_command_name", name)
     ctx.settings.set("installed_cli_name", name)
-    ok(f"Terminal command is now: {link}")
-    hint("If it is not found, ensure ~/.local/bin is in your PATH and open a new terminal.")
+    ok(tr("cli_cli_renamed", name=link))
+    hint(tr("cli_path_hint"))
 
 
 @config_app.command("completions")
@@ -600,7 +618,7 @@ def config_completions(
 
     if install:
         path = install_completions(shell, command)
-        ok(f"{shell} completions installed: {path}")
+        ok(tr("cli_completions_installed", shell=shell, path=path))
         if shell == "zsh":
             hint("Add to ~/.zshrc:  fpath=(~/.local/share/ssh-desk/completions $fpath); autoload -Uz compinit && compinit")
         return
@@ -622,14 +640,16 @@ def tunnel_list():
     ctx.tunnels.refresh_all()
     tunnels = ctx.tunnels.list()
     if not tunnels:
-        info("No tunnels defined. Create one in the GUI (Tunnels page) or via API.")
+        info(tr("cli_no_tunnels"))
         return
     rows = [
         [str(t.id), t.name, ctx.servers.get(t.server_id).alias, t.tunnel_type,
          _tunnel_binding(t), t.status]
         for t in tunnels
     ]
-    print(fmt_table(["ID", "NAME", "SERVER", "TYPE", "BINDING", "STATUS"], rows))
+    print(fmt_table([
+        tr("h_id"), tr("h_name"), tr("h_server"), tr("h_type"), tr("h_binding"), tr("h_status"),
+    ], rows))
 
 
 @tunnel_app.command("start")
@@ -640,9 +660,9 @@ def tunnel_start(name: str = typer.Argument(...)):
         ctx.tunnels.start(tunnel.id)
         t = ctx.tunnels.refresh_status(tunnel.id)
         if t.status == "running":
-            ok(f"Tunnel '{t.name}' is running ({_tunnel_binding(t)})")
+            ok(tr("cli_tunnel_running", name=t.name, binding=_tunnel_binding(t)))
         else:
-            err(f"Tunnel '{t.name}' failed to start: {t.last_error or 'unknown error'}")
+            err(tr("cli_tunnel_failed", name=t.name, error=t.last_error or "unknown error"))
             raise typer.Exit(1)
     except SshDeskError as exc:
         _print_error(exc)
@@ -655,7 +675,7 @@ def tunnel_stop(name: str = typer.Argument(...)):
     tunnel = _find_tunnel(ctx, name)
     try:
         ctx.tunnels.stop(tunnel.id)
-        ok(f"Tunnel '{tunnel.name}' stopped")
+        ok(tr("cli_tunnel_stopped", name=tunnel.name))
     except SshDeskError as exc:
         _print_error(exc)
         raise typer.Exit(1)
@@ -668,7 +688,7 @@ def _find_tunnel(ctx, name: str):
     by_id = [t for t in ctx.tunnels.list() if str(t.id) == name]
     if by_id:
         return by_id[0]
-    err(f"Tunnel '{name}' not found")
+    err(tr("cli_tunnel_not_found", name=name))
     raise typer.Exit(1)
 
 
@@ -687,7 +707,7 @@ def keys_list():
     ctx = get_ctx()
     keys = ctx.keys.list()
     if not keys:
-        info("No SSH keys registered")
+        info(tr("cli_no_keys"))
         return
     rows = []
     for k in keys:
@@ -708,12 +728,12 @@ def keys_generate(
     ctx = get_ctx()
     secret = ""
     if passphrase:
-        secret = typer.prompt("Passphrase", hide_input=True, confirmation_prompt=True)
+        secret = typer.prompt(tr("cli_passphrase_prompt"), hide_input=True, confirmation_prompt=True)
     try:
         key = ctx.keys.generate(name, type_, bits, comment, secret)
-        ok(f"Key '{key.name}' generated ({key.key_type})")
-        print(paint("Fingerprint: ", BOLD) + (key.fingerprint or "-"))
-        hint(f"Public key: {key.private_key_path}.pub")
+        ok(tr("cli_key_generated", name=key.name, type=key.key_type))
+        print(paint(tr("cli_fingerprint_label"), BOLD) + (key.fingerprint or "-"))
+        hint(tr("cli_key_pub_hint", path=f"{key.private_key_path}.pub"))
     except SshDeskError as exc:
         _print_error(exc)
         raise typer.Exit(1)
@@ -729,7 +749,7 @@ def keys_import(
     ctx = get_ctx()
     try:
         key = ctx.keys.import_key(name, path, copy_into_store=copy)
-        ok(f"Key '{key.name}' registered ({key.key_type}, {key.fingerprint})")
+        ok(tr("cli_key_registered", name=key.name, type=key.key_type, fingerprint=key.fingerprint))
     except SshDeskError as exc:
         _print_error(exc)
         raise typer.Exit(1)
@@ -759,15 +779,15 @@ def keys_delete(
     ctx = get_ctx()
     key = next((k for k in ctx.keys.list() if k.name == name), None)
     if not key:
-        err(f"Key '{name}' not found")
+        err(tr("cli_key_not_found", name=name))
         raise typer.Exit(1)
     if not yes:
-        confirm = typer.prompt(f"Remove key '{name}' from SSH Desk? [y/N]", default="n")
+        confirm = typer.prompt(tr("cli_key_remove_confirm", name=name), default="n")
         if confirm.strip().lower() not in ("y", "yes"):
-            info("Aborted")
+            info(tr("cli_aborted"))
             return
     ctx.keys.delete(key.id, delete_files=remove_files)
-    ok(f"Key '{name}' removed")
+    ok(tr("cli_key_removed", name=name))
 
 
 # ===================================================================== import/export/backup/restore
@@ -785,10 +805,10 @@ def import_cmd(
         _print_error(exc)
         raise typer.Exit(1)
     if not rows:
-        info("No importable Host entries found")
+        info(tr("cli_import_none"))
         return
     print(fmt_table(
-        ["#", "HOST", "ALIAS", "USER", "PORT", "KEY", "PROXYJUMP", "ALREADY EXISTS"],
+        ["#", tr("h_host"), tr("h_alias"), tr("h_user"), tr("h_port"), tr("h_key"), "PROXYJUMP", tr("h_exists")],
         [
             [str(i), r.entry.host, r.alias, r.entry.user or "-", str(r.entry.port or 22),
              r.entry.identity_file or "-", r.entry.proxy_jump or "-", "yes" if r.exists else "no"]
@@ -796,7 +816,7 @@ def import_cmd(
         ],
     ))
     if not apply:
-        hint("Dry run. Re-run with --apply to import.")
+        hint(tr("cli_import_dryrun"))
         return
     interactive = all is False and sys.stdin.isatty()
     for row in rows:
@@ -806,7 +826,7 @@ def import_cmd(
         else:
             row.selected = True
     report = ctx.transfer.apply_ssh_import(rows)
-    ok(f"Imported {report['created']} server(s), skipped {report['skipped']}")
+    ok(tr("cli_import_done", created=report["created"], skipped=report["skipped"]))
 
 
 @app.command("export")
@@ -822,9 +842,9 @@ def export_cmd(
     except SshDeskError as exc:
         _print_error(exc)
         raise typer.Exit(1)
-    ok(f"Exported {report['servers']} server(s) to {report['file']}")
+    ok(tr("cli_export_done", n=report["servers"], file=report["file"]))
     if include_secrets:
-        warn("Secrets were included in this export - protect the file!")
+        warn(tr("cli_export_secrets"))
 
 
 @app.command()
@@ -839,7 +859,7 @@ def backup(
     except SshDeskError as exc:
         _print_error(exc)
         raise typer.Exit(1)
-    ok(f"Backup written to {report['file']} ({report['servers']} servers)")
+    ok(tr("cli_backup_done", file=report["file"], n=report["servers"]))
 
 
 @app.command()
@@ -872,7 +892,7 @@ def version():
         proc = subprocess.run(["ssh", "-V"], capture_output=True, text=True)
         print(proc.stderr.strip().splitlines()[0])
     except (FileNotFoundError, IndexError):
-        warn("OpenSSH client not found - install it with: sudo apt install openssh-client")
+        warn(tr("cli_no_ssh"))
 
 
 @app.command("install-cli")
@@ -892,9 +912,9 @@ def install_cli(
         raise typer.Exit(1)
     ctx.settings.set("installed_cli_name", command)
     ctx.settings.set("cli_command_name", command)
-    ok(f"Terminal command installed: {link}")
+    ok(tr("cli_cli_installed", name=link))
     if str(bin_dir()) not in (os.environ.get("PATH") or ""):
-        warn(f"{bin_dir()} is not in PATH. Add it to your ~/.bashrc:")
+        warn(tr("cli_not_in_path", dir=bin_dir()))
         hint(f'  export PATH="{bin_dir()}:$PATH"')
 
 
@@ -910,20 +930,20 @@ def uninstall_data(
     if not yes:
         confirm = typer.prompt("This deletes ALL servers, history and settings. Type 'PURGE' to confirm")
         if confirm.strip() != "PURGE":
-            info("Aborted")
+            info(tr("cli_aborted"))
             return
     removed_secrets = 0
     if not keep_secrets:
         try:
             removed_secrets = ctx.credentials.purge_all()
         except SshDeskError as exc:
-            warn(f"Keyring purge skipped: {exc}")
+            warn(tr("cli_purge_skipped", reason=exc))
     targets = [ctx.config_dir, ctx.data_dir]
     for target in targets:
         target = Path(target)
         if target.exists():
             shutil.rmtree(target, ignore_errors=True)
-    ok(f"Data removed. Purged {removed_secrets} secret(s) from the keyring.")
+    ok(tr("cli_purged", n=removed_secrets))
 
 
 @app.command("proxy", hidden=True)
@@ -1006,15 +1026,17 @@ def _print_summary() -> None:
         active = {s["alias"] for s in _session_scan()}
         rows = [[s.alias, s.name, f"{s.username}@{s.host}:{s.port}",
                  paint("connected", GREEN) if s.alias in active else ""] for s in servers[:8]]
-        print(fmt_table(["ALIAS", "NAME", "HOST", "STATUS"], rows))
+        print(fmt_table([
+            tr("h_alias"), tr("h_name"), tr("h_host"), tr("h_status"),
+        ], rows))
         if len(servers) > 8:
-            hint(f"  ... and {len(servers) - 8} more (run '{command} list')")
+            hint(tr("cli_more_servers", n=len(servers) - 8, cmd=command))
     else:
-        info(f"No servers yet. Add your first server: {command} add")
+        info(tr("cli_first_server", cmd=command))
     print()
-    hint(f"Connect:            {command} <alias> [path]")
-    hint(f"Run a command:      {command} <alias> --exec 'uptime'")
-    hint(f"Help & full guide:  {command} --help")
+    hint(tr("cli_hint_connect", cmd=command))
+    hint(tr("cli_hint_exec", cmd=command))
+    hint(tr("cli_hint_help", cmd=command))
 
 
 if __name__ == "__main__":

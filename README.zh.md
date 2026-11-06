@@ -15,7 +15,7 @@ SSH Desk 是一个真实可安装的产品（绝非原型演示），用于管�
 - 🔐 **安全优先**：强制主机密钥校验并显示指纹对话框；机密绝不进入数据库/日志/命令行参数；不使用 sshpass，也不使用 `StrictHostKeyChecking=no`
 - 🌐 **抗网络中断**：PyPI 多镜像回退链（官方 → ArvanCloud 伊朗 → TUNA → Aliyun → Tencent），并支持 `install.sh --offline` 完全离线安装
 
-📄 **[完整用户指南（PDF，波斯语）](docs/SSH-Desk-User-Guide-fa.pdf)** — 14 页图文指南，涵盖离线安装、完整 CLI 参考、终端、SFTP、隧道与安全模型。
+📄 **[完整用户指南（PDF，中文）](docs/SSH-Desk-User-Guide-zh.pdf)** — 14 页图文指南，涵盖离线安装、完整 CLI 参考、终端、SFTP、隧道与安全模型。另有 7 种语言版本：[English](docs/SSH-Desk-User-Guide-en.pdf) · [فارسی](docs/SSH-Desk-User-Guide-fa.pdf) · [العربية](docs/SSH-Desk-User-Guide-ar.pdf) · [Русский](docs/SSH-Desk-User-Guide-ru.pdf) · [Español](docs/SSH-Desk-User-Guide-es.pdf) · [Français](docs/SSH-Desk-User-Guide-fr.pdf)
 
 ---
 

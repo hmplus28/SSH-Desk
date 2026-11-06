@@ -15,7 +15,7 @@ SSH Desk یک محصول واقعی و قابل‌نصب است (نه یک نم�
 - 🔐 **امنیت در اولویت**: بررسی سخت‌گیرانهٔ Host Key با پنجرهٔ اثرانگشت؛ رازها هرگز در دیتابیس/لاگ/آرگومان نمی‌آیند؛ بدون sshpass و بدون `StrictHostKeyChecking=no`
 - 🌐 **مقاوم به قطعی اینترنت**: زنجیرهٔ میرورهای PyPI (رسمی ← ArvanCloud ایران ← TUNA ← Aliyun ← Tencent) و نصب کاملاً آفلاین با `install.sh --offline`
 
-📄 **[راهنمای کاربر کامل (PDF فارسی)](docs/SSH-Desk-User-Guide-fa.pdf)** — ۱۴ صفحهٔ مصور شامل نصب آفلاین، مرجع کامل CLI، ترمینال، SFTP، تونل‌ها و مدل امنیتی.
+📄 **[راهنمای کاربر کامل (PDF فارسی)](docs/SSH-Desk-User-Guide-fa.pdf)** — ۱۴ صفحهٔ مصور شامل نصب آفلاین، مرجع کامل CLI، ترمینال، SFTP، تونل‌ها و مدل امنیتی. راهنما در ۷ زبان دیگر هم موجود است: [English](docs/SSH-Desk-User-Guide-en.pdf) · [العربية](docs/SSH-Desk-User-Guide-ar.pdf) · [简体中文](docs/SSH-Desk-User-Guide-zh.pdf) · [Русский](docs/SSH-Desk-User-Guide-ru.pdf) · [Español](docs/SSH-Desk-User-Guide-es.pdf) · [Français](docs/SSH-Desk-User-Guide-fr.pdf)
 
 ---
 
