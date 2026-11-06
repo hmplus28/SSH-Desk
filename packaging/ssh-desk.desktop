@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=SSH Desk
+GenericName=SSH Connection Manager
+GenericName[fa]=مدیریت اتصالات SSH
+Comment=Manage SSH servers, terminal, files and tunnels
+Comment[fa]=مدیریت سرورها، ترمینال، فایل‌ها و تونل‌های SSH
+Exec=ssh-desk %U
+Icon=ssh-desk
+Terminal=false
+Categories=Network;Development;System;RemoteAccess;
+Keywords=ssh;server;terminal;sftp;tunnel;
+StartupWMClass=SSH Desk
+MimeType=x-scheme-handler/ssh;

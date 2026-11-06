@@ -1,0 +1,23 @@
+#!/bin/bash
+# postinst for ssh-desk
+set -e
+
+# console entry points (DEB ships the PyInstaller bundle)
+if [ -x /opt/ssh-desk/ssh-desk ]; then
+    ln -sf /opt/ssh-desk/ssh-desk /usr/bin/ssh-desk
+    ln -sf /opt/ssh-desk/ssh-desk-cli /usr/bin/ssh-desk-cli
+    ln -sf /opt/ssh-desk/ssh-desk-askpass /usr/bin/ssh-desk-askpass
+    ln -sf /opt/ssh-desk/ssh-desk-tunnel-runner /usr/bin/ssh-desk-tunnel-runner
+fi
+
+# install the default CLI command for each user is done on first GUI/CLI run
+# (per-user ~/.local/bin symlink, no root required).
+
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database -q /usr/share/applications || true
+fi
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+    gtk-update-icon-cache -qf /usr/share/icons/hicolor || true
+fi
+
+echo "SSH Desk installed. Run 'ssh-desk' (GUI) or 'ssh-desk-cli' (terminal)."

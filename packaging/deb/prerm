@@ -1,0 +1,15 @@
+#!/bin/bash
+# prerm for ssh-desk
+set -e
+
+# NEVER delete user data or keyring secrets without explicit consent:
+#   ~/.config/ssh-desk  ~/.local/share/ssh-desk  (kept by default)
+# To purge everything, the user runs:
+#   ssh-desk-cli uninstall-data
+
+for link in ssh-desk ssh-desk-cli ssh-desk-askpass ssh-desk-tunnel-runner; do
+    if [ -L "/usr/bin/$link" ]; then
+        rm -f "/usr/bin/$link"
+    fi
+done
+exit 0

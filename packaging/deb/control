@@ -1,0 +1,14 @@
+Package: ssh-desk
+Version: 1.0.0
+Section: net
+Priority: optional
+Architecture: amd64
+Maintainer: hmplus28 <hmplus28@users.noreply.github.com>
+Depends: openssh-client
+Recommends: gnome-keyring, libsecret-1-0
+Suggests: seahorse
+Description: SSH Desk - professional SSH connection manager for Ubuntu
+ Desktop GUI + CLI for managing SSH servers: secure password storage in
+ GNOME Keyring, real PTY terminal, SFTP file manager, port forwarding,
+ jump hosts, saved commands and connection history.
+Homepage: https://github.com/hmplus28/SSH-Desk
