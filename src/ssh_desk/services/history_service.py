@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import builtins
 import logging
 
 from sqlalchemy import select
@@ -57,7 +58,7 @@ class HistoryService:
                 query = query.where(ConnectionHistory.status == status)
             return list(session.scalars(query))
 
-    def recent(self, limit: int = 8) -> list[ConnectionHistory]:
+    def recent(self, limit: int = 8) -> builtins.list[ConnectionHistory]:
         return self.list(limit=limit)
 
     def clear(self) -> int:

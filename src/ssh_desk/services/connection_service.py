@@ -12,6 +12,7 @@ from ssh_desk.core.exceptions import (
     HostKeyUnknownError,
     SSHConnectionError,
 )
+from ssh_desk.database.models import Server
 from ssh_desk.ssh import client, hostkeys
 
 log = logging.getLogger("ssh_desk.connection")
@@ -21,10 +22,11 @@ log = logging.getLogger("ssh_desk.connection")
 class PreparedSession:
     argv: list[str]
     env: dict
-    server: object
+    server: Server
     remote_desc: str = ""
     path: str | None = None
     exec_cmd: str | None = None
+    _ephemeral_ref: str | None = None
 
 
 @dataclass
@@ -193,7 +195,7 @@ class ConnectionService:
         return self._build(server, path=path, exec_cmd=command, user=user, port=port,
                            force_tty=force_tty, session_marker=session_marker)
 
-    def _build(self, server, *, path, exec_cmd, user, port, force_tty, session_marker) -> PreparedSession:
+    def _build(self, server: Server, *, path, exec_cmd, user, port, force_tty, session_marker) -> PreparedSession:
         argv, env = client.build_connect_argv(
             self.ctx, server, path=path, exec_cmd=exec_cmd, user=user, port=port,
             force_tty=force_tty, session_marker=session_marker,
@@ -206,6 +208,11 @@ class ConnectionService:
     # ------------------------------------------------------------------ test
     def test(self, server, *, user=None, port=None, gate=None, password_override=None) -> TestResult:
         gate = gate or CliHostKeyGate()
+        # re-read the row: callers may hold a stale instance whose secret_ref /
+        # private_key_path were set by a later update() on a different object
+        fresh = self.ctx.servers.get(server.id)
+        if fresh is not None and fresh.id == server.id:
+            server = fresh
         self._resolve_server(server, user, port)
         self.check_host_key(server, gate, port_override=port)
 

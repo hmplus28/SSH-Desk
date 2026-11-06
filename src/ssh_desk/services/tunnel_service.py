@@ -115,13 +115,21 @@ class TunnelService:
 
         log_file = open(os.path.join(self.ctx.data_dir, "logs", f"tunnel-{tunnel.id}.log"), "ab")
         runner_module = "ssh_desk.ssh.tunnel_runner"
+        # the detached runner must open the SAME database as this instance
+        # (works for both default installs and custom data dirs)
+        runner_env = {
+            **os.environ,
+            "SSH_DESK_DATA_DIR": str(self.ctx.data_dir),
+            "SSH_DESK_CONFIG_DIR": str(self.ctx.config_dir),
+            **env,
+        }
         proc = subprocess.Popen(
             [sys.executable, "-m", runner_module, str(tunnel.id)],
             stdin=subprocess.DEVNULL,
             stdout=log_file,
             stderr=subprocess.STDOUT,
             start_new_session=True,
-            env={**os.environ, **env},
+            env=runner_env,
         )
         log.info("tunnel daemon started for '%s' (runner pid %s)", tunnel.name, proc.pid)
         return self.refresh_status(tunnel.id)

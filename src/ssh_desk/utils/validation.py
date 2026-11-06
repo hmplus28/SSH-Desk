@@ -9,7 +9,9 @@ from pydantic import BaseModel, Field, field_validator
 from ssh_desk.core.constants import AUTH_TYPES, TUNNEL_TYPES
 
 ALIAS_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,63}$")
-PATH_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,31}$")
+# Path names are human labels: spaces and non-Latin letters (e.g. Persian) allowed.
+# Forbidden: control characters, leading '-' (argv option confusion), empty/overlong.
+PATH_NAME_RE = re.compile(r"^[^\x00-\x1f\x7f-][^\x00-\x1f\x7f]{0,31}$", re.UNICODE)
 USERNAME_RE = re.compile(r"^[^\s:/$]{1,64}$")
 HOSTNAME_RE = re.compile(
     r"^(?=.{1,253}\Z)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*\.?\Z",
@@ -90,8 +92,12 @@ class PathInput(BaseModel):
     @field_validator("name")
     @classmethod
     def _name(cls, v: str) -> str:
+        v = v.strip()
         if not PATH_NAME_RE.match(v):
-            raise ValueError("Path name must be 1-32 chars: letters, digits, '-' or '_'")
+            raise ValueError(
+                "Path name must be 1-32 visible characters (spaces and unicode letters "
+                "allowed), must not start with '-'"
+            )
         return v
 
     @field_validator("path")

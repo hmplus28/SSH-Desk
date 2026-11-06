@@ -3,7 +3,7 @@
 import logging
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from ssh_desk.core.config import AppConfig
 from ssh_desk.core.constants import (
@@ -59,7 +59,7 @@ class AppContext:
         ensure_askpass_helper(self.data_dir, CLI_WRAPPER_NAME)
 
         self._secret_store = secret_store
-        self._services = {}
+        self._services: dict[str, Any] = {}
 
     # ------------------------------------------------------------- singleton
     @classmethod

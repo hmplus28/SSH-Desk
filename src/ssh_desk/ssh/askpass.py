@@ -6,7 +6,6 @@ the helper receives only a secret *reference* (attributes) and reads the secret
 from the Secret Service (GNOME Keyring) itself.
 """
 
-import json
 import logging
 import os
 import stat
@@ -28,9 +27,8 @@ def obtain_secret() -> str:
         sys.stderr.write("ssh-desk-askpass: no secret reference provided\n")
         return ""
     try:
-        ref = json.loads(ref_env)
         store = _get_store()
-        secret = store.retrieve(ref)
+        secret = store.retrieve(ref_env)  # retrieve() parses the JSON ref itself
         return secret or ""
     except Exception as exc:
         # Detailed reason goes to stderr only; ssh shows a generic auth failure.
@@ -50,6 +48,10 @@ def run() -> int:
     sys.stdout.write(secret + "\n")
     sys.stdout.flush()
     return 0
+
+
+if __name__ == "__main__":  # the helper wrapper runs this module with -m
+    sys.exit(run())
 
 
 def ensure_askpass_helper(data_dir: Path, cli_wrapper_name: str = "ssh-desk-cli") -> Path:

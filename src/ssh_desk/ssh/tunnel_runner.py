@@ -10,6 +10,7 @@ import signal
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 from ssh_desk.database.models import Tunnel
 from ssh_desk.ssh import client
@@ -116,5 +117,5 @@ def main() -> int:
 if __name__ == "__main__":
     from ssh_desk.utils.logging_setup import setup_logging
 
-    setup_logging(os.path.join(os.path.expanduser("~/.local/share/ssh-desk"), "logs"))
+    setup_logging(Path(os.path.expanduser("~/.local/share/ssh-desk")) / "logs")
     sys.exit(main())

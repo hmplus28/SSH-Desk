@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any, cast
 
 from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
@@ -180,7 +181,7 @@ class ServerService:
             host=src.host,
             port=src.port,
             username=src.username,
-            auth_type=src.auth_type,
+            auth_type=cast(Any, src.auth_type),
             default_path=src.default_path,
             connection_timeout=src.connection_timeout,
             keep_alive=src.keep_alive,
@@ -346,7 +347,7 @@ class ServerService:
         )
 
     # ------------------------------------------------------------------ commands
-    def list_commands(self, server_id: int | None = "any") -> list[SavedCommand]:
+    def list_commands(self, server_id: int | str | None = "any") -> list[SavedCommand]:
         with self.ctx.db.session() as session:
             query = select(SavedCommand).order_by(SavedCommand.category, SavedCommand.name)
             if server_id == "any":

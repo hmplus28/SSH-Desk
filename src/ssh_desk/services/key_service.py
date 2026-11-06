@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import builtins
 import logging
 import shutil
 from pathlib import Path
@@ -46,6 +47,7 @@ class KeyService:
             if passphrase
             else serialization.NoEncryption()
         )
+        private_key: rsa.RSAPrivateKey | ed25519.Ed25519PrivateKey | ec.EllipticCurvePrivateKey
         if key_type == "ed25519":
             private_key = ed25519.Ed25519PrivateKey.generate()
         elif key_type == "rsa":
@@ -180,7 +182,7 @@ class KeyService:
             serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH
         ).decode()
 
-    def linked_servers(self, key_id: int) -> list[Server]:
+    def linked_servers(self, key_id: int) -> builtins.list[Server]:
         key = self.get(key_id)
         with self.ctx.db.session() as session:
             return list(session.scalars(select(Server).where(Server.private_key_path == key.private_key_path)))

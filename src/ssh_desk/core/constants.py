@@ -32,7 +32,22 @@ SECRET_REF_ENV = "SSH_DESK_SECRET_REF"
 
 OK_MARKER = "__SSH_DESK_OK__"
 
-RESERVED_CLI_NAMES = {"ssh", "scp", "sftp", "sftp-server", "sudo", "python", "python3", "git", "apt", "systemctl"}
+RESERVED_CLI_NAMES = {
+    # SSH suite & this app
+    "ssh", "scp", "sftp", "sftp-server", "ssh-add", "ssh-agent", "ssh-keygen",
+    "ssh-keyscan", "sshd", "ssh-desk", "ssh-desk-cli",
+    # shells & core utils (shadowing these breaks the shell)
+    "sh", "bash", "zsh", "dash", "fish", "ls", "cp", "mv", "rm", "ln", "cat",
+    "chmod", "chown", "mkdir", "rmdir", "touch", "find", "grep", "sed", "awk",
+    "tar", "gzip", "kill", "killall", "ps", "pwd", "echo", "env", "exit",
+    "cd", "export", "alias", "which", "man", "less", "more", "head", "tail",
+    "vi", "vim", "nano", "clear", "sort", "uniq", "wc", "true", "false",
+    # system & package management
+    "sudo", "su", "passwd", "systemctl", "service", "journalctl", "mount",
+    "umount", "apt", "apt-get", "dpkg", "snap", "python", "python3", "pip",
+    "pip3", "git", "curl", "wget", "ping", "ip", "ifconfig", "netstat",
+    "dbus-daemon", "gnome-keyring-daemon", "xdg-open", "update-alternatives",
+}
 
 AUTH_TYPES = ("password", "key", "agent", "interactive")
 TUNNEL_TYPES = ("local", "remote", "dynamic")

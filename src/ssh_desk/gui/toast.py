@@ -38,7 +38,7 @@ class ToastManager(QWidget):
     def __init__(self, window: QWidget):
         super().__init__(window)
         self.parent_window = window
-        self._toasts = []
+        self._toasts: list[Toast] = []
 
     def _place(self, toast: Toast, index: int):
         toast.adjustSize()
@@ -49,7 +49,7 @@ class ToastManager(QWidget):
             x = margin
         toast.move(x, y)
 
-    def show(self, text: str, kind: str = "info", timeout: int = 3500):  # noqa: A003
+    def notify(self, text: str, kind: str = "info", timeout: int = 3500):
         toast = Toast(text, kind, self.parent_window)
         toast.show()
         self._toasts.append(toast)
@@ -71,13 +71,13 @@ class ToastManager(QWidget):
 
     # convenience API used by pages
     def info(self, text: str):
-        self.show(text, "info")
+        self.notify(text, "info")
 
     def success(self, text: str):
-        self.show(text, "success")
+        self.notify(text, "success")
 
     def error(self, text: str):
-        self.show(text, "error", timeout=6000)
+        self.notify(text, "error", timeout=6000)
 
     def warning(self, text: str):
-        self.show(text, "warning", timeout=5000)
+        self.notify(text, "warning", timeout=5000)

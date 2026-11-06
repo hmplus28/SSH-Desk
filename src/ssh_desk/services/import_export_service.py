@@ -3,9 +3,10 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, cast
 
 from ssh_desk.core.exceptions import ConfigError, NotFoundError
-from ssh_desk.ssh.config_manager import default_ssh_config_path, parse_ssh_config
+from ssh_desk.ssh.config_manager import SshConfigEntry, default_ssh_config_path, parse_ssh_config
 from ssh_desk.utils.validation import PathInput, ServerInput
 
 try:
@@ -23,7 +24,7 @@ log = logging.getLogger("ssh_desk.transfer")
 
 @dataclass
 class ImportRow:
-    entry: object
+    entry: SshConfigEntry
     alias: str
     exists: bool
     selected: bool = True
@@ -91,7 +92,7 @@ class TransferService:
                 host=entry.effective_hostname,
                 port=entry.port or 22,
                 username=entry.user or "root",
-                auth_type=auth_type,
+                auth_type=cast(Any, auth_type),
                 default_path=None,
                 keep_alive=entry.server_alive_interval or 30,
             )

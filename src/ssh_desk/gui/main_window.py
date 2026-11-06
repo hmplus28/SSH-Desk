@@ -159,14 +159,18 @@ class MainWindow(QMainWindow):
         from ssh_desk.gui.theme import DARK, LIGHT
 
         palette = DARK if theme != "light" else LIGHT
-        QApplication.instance().setStyleSheet(build_qss(palette))
+        app = QApplication.instance()
+        if isinstance(app, QApplication):
+            app.setStyleSheet(build_qss(palette))
         self.ctx.settings.set("theme", theme)
 
     def apply_language(self, lang: str):
         set_language(lang)
         self.ctx.settings.set("language", lang)
         direction = Qt.LayoutDirection.RightToLeft if is_rtl() else Qt.LayoutDirection.LeftToRight
-        QApplication.instance().setLayoutDirection(direction)
+        app = QApplication.instance()
+        if isinstance(app, QApplication):
+            app.setLayoutDirection(direction)
         self.setLayoutDirection(direction)
         for row in range(self.sidebar.count()):
             key = self.sidebar.item(row).data(Qt.ItemDataRole.UserRole)

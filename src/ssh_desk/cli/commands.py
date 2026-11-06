@@ -4,6 +4,7 @@ import logging
 import os
 import shutil
 import sys
+from typing import Any
 
 import typer
 
@@ -302,7 +303,7 @@ def edit(
     ctx = get_ctx()
     try:
         server = ctx.servers.require_by_alias(alias)
-        updates = {}
+        updates: dict[str, Any] = {}
         if name is not None: updates["name"] = name
         if host is not None: updates["host"] = host
         if user is not None: updates["username"] = user
@@ -320,7 +321,7 @@ def edit(
             _interactive_edit(ctx, server)
             return
 
-        group_id = ...
+        group_id: Any = ...
         if group is not None:
             obj = next((g for g in ctx.servers.list_groups() if g.name == group), None)
             group_id = obj.id if obj else ctx.servers.create_group(group).id
@@ -789,7 +790,7 @@ def import_cmd(
     print(fmt_table(
         ["#", "HOST", "ALIAS", "USER", "PORT", "KEY", "PROXYJUMP", "ALREADY EXISTS"],
         [
-            [str(i), r.entry.host, r.alias, r.entry.user or "-", r.entry.port or 22,
+            [str(i), r.entry.host, r.alias, r.entry.user or "-", str(r.entry.port or 22),
              r.entry.identity_file or "-", r.entry.proxy_jump or "-", "yes" if r.exists else "no"]
             for i, r in enumerate(rows, 1)
         ],

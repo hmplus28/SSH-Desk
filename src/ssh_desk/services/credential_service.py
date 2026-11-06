@@ -8,6 +8,7 @@ Security rules enforced here:
 
 import json
 import logging
+import threading
 
 from ssh_desk.core.exceptions import KeyringUnavailableError, SecretNotFoundError
 
@@ -27,7 +28,14 @@ def _ref(attrs: dict) -> str:
 
 
 class SecretServiceStore:
-    """Secret Service (GNOME Keyring) backend using SecretStorage."""
+    """Secret Service (GNOME Keyring) backend using SecretStorage.
+
+    The underlying D-Bus connection is NOT thread-safe, while the GUI/CLI call
+    this store from worker threads (connection tests, SFTP, tunnels). All D-Bus
+    operations are therefore serialized behind a process-wide re-entrant lock.
+    """
+
+    _dbus_lock = threading.RLock()
 
     def __init__(self):
         self._collection = None
@@ -64,41 +72,45 @@ class SecretServiceStore:
             ) from exc
 
     def store(self, attrs: dict, secret: str, label: str) -> str:
-        collection = self._get_collection()
-        full_attrs = {**attrs, APP_ATTR: "ssh-desk", SCHEMA_ATTR: SCHEMA_VALUE}
+        with self._dbus_lock:
+            collection = self._get_collection()
+            full_attrs = {**attrs, APP_ATTR: "ssh-desk", SCHEMA_ATTR: SCHEMA_VALUE}
 
-        for item in collection.search_items({APP_ATTR: "ssh-desk", **attrs}):
-            item.delete()
-        collection.create_item(label, full_attrs, secret.encode("utf-8"), replace=True)
-        return _ref(attrs)
+            for item in collection.search_items({APP_ATTR: "ssh-desk", **attrs}):
+                item.delete()
+            collection.create_item(label, full_attrs, secret.encode("utf-8"), replace=True)
+            return _ref(attrs)
 
     def retrieve(self, ref: str) -> str | None:
-        attrs = json.loads(ref)
-        collection = self._get_collection()
+        with self._dbus_lock:
+            attrs = json.loads(ref)
+            collection = self._get_collection()
 
-        for item in collection.search_items(attrs):
-            if item.is_locked():
-                item.unlock()
-            secret = item.get_secret()
-            return secret.decode("utf-8") if secret else None
-        return None
+            for item in collection.search_items(attrs):
+                if item.is_locked():
+                    item.unlock()
+                secret = item.get_secret()
+                return secret.decode("utf-8") if secret else None
+            return None
 
     def delete(self, ref: str) -> bool:
-        attrs = json.loads(ref)
-        collection = self._get_collection()
-        deleted = False
-        for item in collection.search_items(attrs):
-            item.delete()
-            deleted = True
-        return deleted
+        with self._dbus_lock:
+            attrs = json.loads(ref)
+            collection = self._get_collection()
+            deleted = False
+            for item in collection.search_items(attrs):
+                item.delete()
+                deleted = True
+            return deleted
 
     def purge_all(self) -> int:
-        collection = self._get_collection()
-        count = 0
-        for item in collection.search_items({APP_ATTR: "ssh-desk"}):
-            item.delete()
-            count += 1
-        return count
+        with self._dbus_lock:
+            collection = self._get_collection()
+            count = 0
+            for item in collection.search_items({APP_ATTR: "ssh-desk"}):
+                item.delete()
+                count += 1
+            return count
 
     def available(self) -> bool:
         try:

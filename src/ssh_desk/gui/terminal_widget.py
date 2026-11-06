@@ -67,9 +67,9 @@ class TerminalWidget(QWidget):
         self._cell_h = self._metrics.height() + 2
 
         self.columns, self.lines = 80, 24
-        self.screen = pyte.Screen(self.columns, self.lines)
-        self.stream = pyte.ByteStream(self.screen)
-        self.screen.set_mode(pyte.modes.LNM)
+        self.term_screen = pyte.Screen(self.columns, self.lines)
+        self.stream = pyte.ByteStream(self.term_screen)
+        self.term_screen.set_mode(pyte.modes.LNM)
 
         self.master: int | None = None
         self.process: subprocess.Popen | None = None
@@ -157,7 +157,7 @@ class TerminalWidget(QWidget):
         if (cols, rows) != (self.columns, self.lines):
             self.columns, self.lines = cols, rows
             try:
-                self.screen.resize(rows, cols)
+                self.term_screen.resize(rows, cols)
             except Exception:
                 pass
             if self.master is not None:
@@ -181,7 +181,7 @@ class TerminalWidget(QWidget):
             painter.end()
             return
 
-        screen = self.screen
+        screen = self.term_screen
         cursor_visible = 25 in getattr(screen, "mode", {25})
         for row in range(self.lines):
             y = (row + 1) * self._cell_h
@@ -398,7 +398,7 @@ class TerminalWidget(QWidget):
         for row in range(r1, r2 + 1):
             chars = []
             for col in range(c1, (c2 + 1) if row == r2 else self.columns):
-                char = self.screen.buffer.get((col, row))
+                char = self.term_screen.buffer.get((col, row))
                 chars.append(char.data if char else " ")
             lines.append("".join(chars).rstrip())
         text = "\n".join(lines)

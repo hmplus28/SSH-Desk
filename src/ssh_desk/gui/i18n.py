@@ -2,7 +2,7 @@
 
 from ssh_desk.core.config import DEFAULTS
 
-_current_lang = DEFAULTS["language"]
+_current_lang: str = str(DEFAULTS["language"])
 
 STRINGS: dict[str, dict[str, str]] = {
     # ----- generic

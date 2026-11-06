@@ -27,11 +27,12 @@ from ssh_desk.gui.widgets_common import ConfirmDialog, EmptyState, Page
 
 
 def _fmt_size(size: int) -> str:
+    value = float(size)
     for unit in ("B", "KB", "MB", "GB", "TB"):
-        if size < 1024 or unit == "TB":
-            return f"{size:.0f} {unit}" if unit == "B" else f"{size:.1f} {unit}"
-        size /= 1024
-    return str(size)
+        if value < 1024 or unit == "TB":
+            return f"{value:.0f} {unit}" if unit == "B" else f"{value:.1f} {unit}"
+        value /= 1024
+    return str(value)
 
 
 class FilesPage(Page):
