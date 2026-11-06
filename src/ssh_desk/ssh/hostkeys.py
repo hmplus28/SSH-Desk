@@ -126,7 +126,7 @@ def add_entry(file_path: Path, entry: HostKeyEntry) -> None:
     file_path.parent.mkdir(parents=True, exist_ok=True)
     existing = set()
     if file_path.exists():
-        existing = {l.strip() for l in file_path.read_text(errors="replace").splitlines()}
+        existing = {line.strip() for line in file_path.read_text(errors="replace").splitlines()}
     if entry.line.strip() not in existing:
         with open(file_path, "a", encoding="utf-8") as fh:
             fh.write(entry.line.strip() + "\n")

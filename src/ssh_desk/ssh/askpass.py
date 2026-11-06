@@ -80,4 +80,6 @@ def ensure_askpass_helper(data_dir: Path, cli_wrapper_name: str = "ssh-desk-cli"
             path.chmod(path.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
         except OSError:
             pass
+    if changed:
+        log.debug("askpass/cli helpers written to %s", bin_dir)
     return helper

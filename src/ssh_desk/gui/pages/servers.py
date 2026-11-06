@@ -5,16 +5,13 @@ from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QComboBox,
     QHBoxLayout,
-    QInputDialog,
     QLabel,
     QLineEdit,
     QMenu,
-    QMessageBox,
     QPushButton,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
-    QWidget,
 )
 
 from ssh_desk.core.events import TOPIC_SERVERS

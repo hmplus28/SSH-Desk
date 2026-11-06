@@ -1,7 +1,7 @@
 """Toast notifications (top-right overlay with fade in/out)."""
 
-from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QTimer
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QFrame, QVBoxLayout, QWidget
+from PySide6.QtCore import QPropertyAnimation, QTimer
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QWidget
 
 from ssh_desk.gui.i18n import current_language
 

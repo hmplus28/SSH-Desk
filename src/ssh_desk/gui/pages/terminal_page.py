@@ -1,16 +1,11 @@
 """Terminal page: multi-tab real PTY sessions."""
 
-from typing import Optional
 
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QHBoxLayout,
-    QInputDialog,
-    QLabel,
     QPushButton,
     QTabWidget,
     QVBoxLayout,
-    QWidget,
 )
 
 from ssh_desk.gui.i18n import tr
@@ -73,7 +68,7 @@ class TerminalPage(Page):
         self.empty.setGeometry(self.tabs.rect())
 
     # ------------------------------------------------------------- sessions
-    def open_session(self, prepared, label: str) -> Optional[TerminalWidget]:
+    def open_session(self, prepared, label: str) -> TerminalWidget | None:
         font_size = int(self.ctx.settings.get("terminal_font_size", 11))
         widget = TerminalWidget(prepared.argv, prepared.env, label, font_size)
         index = self.tabs.addTab(widget, f"▸ {label}")
@@ -95,7 +90,7 @@ class TerminalPage(Page):
         if index >= 0:
             self.tabs.setTabText(index, f"⏹ {widget.label} ({code})")
 
-    def current_widget(self) -> Optional[TerminalWidget]:
+    def current_widget(self) -> TerminalWidget | None:
         return self.tabs.currentWidget()
 
     def close_current_tab(self):
@@ -129,6 +124,5 @@ class TerminalPage(Page):
 
 
 def QApplication_copy(widget):
-    from PySide6.QtWidgets import QApplication
 
     widget._copy_selection()

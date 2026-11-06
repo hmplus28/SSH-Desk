@@ -1,7 +1,6 @@
 """Dashboard: stats, favorites quick-connect, recent connections, SSH engine status."""
 
 import shutil
-import subprocess
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -13,7 +12,6 @@ from PySide6.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
-    QWidget,
 )
 
 from ssh_desk.gui.i18n import tr

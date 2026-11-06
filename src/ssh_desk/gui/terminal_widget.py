@@ -9,16 +9,14 @@ import fcntl
 import os
 import pty
 import re
-import shlex
 import signal
 import struct
 import subprocess
 import termios
-from typing import Optional
 
 import pyte
-from PySide6.QtCore import Qt, QTimer, QSocketNotifier, Signal
-from PySide6.QtGui import QColor, QFont, QFontMetricsF, QPainter, QClipboard
+from PySide6.QtCore import QSocketNotifier, Qt, QTimer, Signal
+from PySide6.QtGui import QClipboard, QColor, QFont, QFontMetricsF, QPainter
 from PySide6.QtWidgets import QApplication, QWidget
 
 from ssh_desk.gui.i18n import tr
@@ -73,13 +71,13 @@ class TerminalWidget(QWidget):
         self.stream = pyte.ByteStream(self.screen)
         self.screen.set_mode(pyte.modes.LNM)
 
-        self.master: Optional[int] = None
-        self.process: Optional[subprocess.Popen] = None
-        self.notifier: Optional[QSocketNotifier] = None
-        self._selection: Optional[tuple[int, int, int, int]] = None  # r1,c1,r2,c2
+        self.master: int | None = None
+        self.process: subprocess.Popen | None = None
+        self.notifier: QSocketNotifier | None = None
+        self._selection: tuple[int, int, int, int] | None = None  # r1,c1,r2,c2
         self._selecting = False
         self._anchor = None
-        self._exit_code: Optional[int] = None
+        self._exit_code: int | None = None
         self._closed = False
         self._palette_bg = QColor("#14161b")
         self._palette_fg = QColor("#e7eaf0")

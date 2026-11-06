@@ -1,17 +1,16 @@
 """Files page: two-pane SFTP file manager (local <-> remote) with full operations."""
 
 import os
-import shutil
-import stat
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QFileSystemWatcher
+from PySide6.QtCore import QFileSystemWatcher, Qt
 from PySide6.QtWidgets import (
     QComboBox,
     QFileDialog,
     QFileSystemModel,
     QHBoxLayout,
     QHeaderView,
+    QInputDialog,
     QLabel,
     QLineEdit,
     QMessageBox,
@@ -262,7 +261,6 @@ class FilesPage(Page):
 
     # ------------------------------------------------------------- operations
     def _with_progress(self, label, job, done):
-        from ssh_desk.gui.widgets_common import GenericWorker
 
         self.btn_connect.setEnabled(False)
 
@@ -365,8 +363,8 @@ class FilesPage(Page):
         def done(_r):
             self._pending_upload[str(local)] = remote
             self.watcher.addPath(str(local))
-            from PySide6.QtGui import QDesktopServices
             from PySide6.QtCore import QUrl
+            from PySide6.QtGui import QDesktopServices
 
             QDesktopServices.openUrl(QUrl.fromLocalFile(str(local)))
 
@@ -376,7 +374,7 @@ class FilesPage(Page):
         remote = self._pending_upload.get(path)
         if not remote or not self.session:
             return
-        answer = QMessageBox.question(self, tr("upload"), f"{path}\n→ {remote} ?", 
+        answer = QMessageBox.question(self, tr("upload"), f"{path}\n→ {remote} ?",
                                       QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if answer == QMessageBox.StandardButton.Yes:
             self._with_progress("upload", lambda: self.session.upload(path, remote), lambda _r: self._load_remote())

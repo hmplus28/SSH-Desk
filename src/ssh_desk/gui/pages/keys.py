@@ -1,10 +1,8 @@
 """SSH keys page: generate, import, export, delete, install guide."""
 
 import shutil
-import subprocess
 from pathlib import Path
 
-from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,

@@ -4,7 +4,6 @@ import logging
 import os
 import shutil
 import sys
-from typing import Optional
 
 import typer
 
@@ -64,7 +63,7 @@ def set_ctx(ctx) -> None:
 # ===================================================================== list
 @app.command("list")
 def list_cmd(
-    group: Optional[str] = typer.Option(None, "--group", help="Filter by group name"),
+    group: str | None = typer.Option(None, "--group", help="Filter by group name"),
     favorites: bool = typer.Option(False, "--favorites", "--fav", help="Only favorites"),
     search: str = typer.Option("", "--search", help="Search text"),
 ):
@@ -108,18 +107,18 @@ def _session_scan():
 # ===================================================================== add
 @app.command()
 def add(
-    alias: Optional[str] = typer.Option(None, "--alias", "-a", help="Unique alias (used as `sss <alias>`)"),
-    host: Optional[str] = typer.Option(None, "--host", help="IP or hostname"),
-    user: Optional[str] = typer.Option(None, "--user", "-u", help="SSH username"),
-    port: Optional[int] = typer.Option(None, "--port", "-p", help="SSH port"),
-    name: Optional[str] = typer.Option(None, "--name", help="Display name"),
-    auth: Optional[str] = typer.Option(None, "--auth", help="password | key | agent | interactive"),
-    key: Optional[str] = typer.Option(None, "--key", help="Private key path (auth=key)"),
-    group: Optional[str] = typer.Option(None, "--group", help="Group name (created if missing)"),
-    path: Optional[str] = typer.Option(None, "--path", help="Default remote path"),
+    alias: str | None = typer.Option(None, "--alias", "-a", help="Unique alias (used as `sss <alias>`)"),
+    host: str | None = typer.Option(None, "--host", help="IP or hostname"),
+    user: str | None = typer.Option(None, "--user", "-u", help="SSH username"),
+    port: int | None = typer.Option(None, "--port", "-p", help="SSH port"),
+    name: str | None = typer.Option(None, "--name", help="Display name"),
+    auth: str | None = typer.Option(None, "--auth", help="password | key | agent | interactive"),
+    key: str | None = typer.Option(None, "--key", help="Private key path (auth=key)"),
+    group: str | None = typer.Option(None, "--group", help="Group name (created if missing)"),
+    path: str | None = typer.Option(None, "--path", help="Default remote path"),
     description: str = typer.Option("", "--description", help="Description"),
     tags: str = typer.Option("", "--tags", help="Comma separated tags"),
-    timeout: Optional[int] = typer.Option(None, "--timeout", help="Connection timeout (s)"),
+    timeout: int | None = typer.Option(None, "--timeout", help="Connection timeout (s)"),
 ):
     """Add a new server (interactive when options are missing)."""
     ctx = get_ctx()
@@ -257,8 +256,8 @@ def info_cmd(
 @app.command()
 def test(
     alias: str = typer.Argument(...),
-    user: Optional[str] = typer.Option(None, "--user", help="Override username (not saved)"),
-    port: Optional[int] = typer.Option(None, "--port", help="Override port (not saved)"),
+    user: str | None = typer.Option(None, "--user", help="Override username (not saved)"),
+    port: int | None = typer.Option(None, "--port", help="Override port (not saved)"),
     accept_host_key: bool = typer.Option(False, "--accept-host-key", help="Accept and store unknown host key"),
 ):
     """Test connection to a server."""
@@ -287,16 +286,16 @@ def _cli_gate(accept_host_key: bool):
 @app.command()
 def edit(
     alias: str = typer.Argument(...),
-    name: Optional[str] = typer.Option(None, "--name"),
-    host: Optional[str] = typer.Option(None, "--host"),
-    user: Optional[str] = typer.Option(None, "--user"),
-    port: Optional[int] = typer.Option(None, "--port"),
-    auth: Optional[str] = typer.Option(None, "--auth"),
-    key: Optional[str] = typer.Option(None, "--key"),
-    group: Optional[str] = typer.Option(None, "--group"),
-    path: Optional[str] = typer.Option(None, "--path", help="Default remote path ('' clears)"),
-    description: Optional[str] = typer.Option(None, "--description"),
-    tags: Optional[str] = typer.Option(None, "--tags"),
+    name: str | None = typer.Option(None, "--name"),
+    host: str | None = typer.Option(None, "--host"),
+    user: str | None = typer.Option(None, "--user"),
+    port: int | None = typer.Option(None, "--port"),
+    auth: str | None = typer.Option(None, "--auth"),
+    key: str | None = typer.Option(None, "--key"),
+    group: str | None = typer.Option(None, "--group"),
+    path: str | None = typer.Option(None, "--path", help="Default remote path ('' clears)"),
+    description: str | None = typer.Option(None, "--description"),
+    tags: str | None = typer.Option(None, "--tags"),
     set_password: bool = typer.Option(False, "--set-password", help="Prompt to (re)set the keyring password"),
 ):
     """Edit a server. Without options an interactive editor runs."""
@@ -425,10 +424,10 @@ def delete(
 @app.command()
 def connect(
     target: str = typer.Argument(..., help="Server alias"),
-    path: Optional[str] = typer.Argument(None, help="Saved path name or absolute remote path"),
-    exec_cmd: Optional[str] = typer.Option(None, "--exec", help="Run a command instead of a shell"),
-    user: Optional[str] = typer.Option(None, "--user", help="Override username (not saved)"),
-    port: Optional[int] = typer.Option(None, "--port", help="Override port (not saved)"),
+    path: str | None = typer.Argument(None, help="Saved path name or absolute remote path"),
+    exec_cmd: str | None = typer.Option(None, "--exec", help="Run a command instead of a shell"),
+    user: str | None = typer.Option(None, "--user", help="Override username (not saved)"),
+    port: int | None = typer.Option(None, "--port", help="Override port (not saved)"),
     accept_host_key: bool = typer.Option(False, "--accept-host-key"),
     dry_run: bool = typer.Option(False, "--dry-run", help="Print the ssh command line and exit"),
 ):
@@ -475,7 +474,7 @@ def search(term: str = typer.Argument(...)):
 # ===================================================================== history
 @app.command()
 def history(
-    server: Optional[str] = typer.Option(None, "--server", help="Filter by alias"),
+    server: str | None = typer.Option(None, "--server", help="Filter by alias"),
     limit: int = typer.Option(20, "--limit", "-n", help="Number of rows"),
     status: str = typer.Option("", "--status", help="Filter: connected|closed|failed|interrupted"),
 ):
@@ -596,7 +595,7 @@ def config_completions(
     """Generate or install shell completions (aliases included)."""
     ctx = get_ctx()
     command = ctx.settings.cli_command_name
-    from ssh_desk.cli.shell_integration import completion_file_path, install_completions
+    from ssh_desk.cli.shell_integration import install_completions
 
     if install:
         path = install_completions(shell, command)
@@ -773,7 +772,7 @@ def keys_delete(
 # ===================================================================== import/export/backup/restore
 @app.command("import")
 def import_cmd(
-    file: Optional[str] = typer.Option(None, "--file", help="Path to ssh config (default ~/.ssh/config)"),
+    file: str | None = typer.Option(None, "--file", help="Path to ssh config (default ~/.ssh/config)"),
     apply: bool = typer.Option(False, "--apply", help="Actually import (default: preview only)"),
     all: bool = typer.Option(False, "--all", help="Import all entries without asking"),
 ):
@@ -877,7 +876,7 @@ def version():
 
 @app.command("install-cli")
 def install_cli(
-    name: Optional[str] = typer.Option(None, "--name", help="Command name (default: configured name)"),
+    name: str | None = typer.Option(None, "--name", help="Command name (default: configured name)"),
 ):
     """Install/refresh the terminal command symlink in ~/.local/bin."""
     ctx = get_ctx()
@@ -904,7 +903,6 @@ def uninstall_data(
     keep_secrets: bool = typer.Option(False, "--keep-secrets", help="Do NOT purge keyring secrets"),
 ):
     """Remove SSH Desk data (config, database, logs) - requires explicit confirmation."""
-    import os
     from pathlib import Path
 
     ctx = get_ctx()
@@ -935,7 +933,6 @@ def proxy(
 ):
     """Internal ProxyCommand helper: stdio forward through a jump server (ssh -W)."""
     ctx = get_ctx()
-    from ssh_desk.services.connection_service import NonInteractiveGate
     from ssh_desk.utils.validation import validate_host
 
     validate_host(target_host)
@@ -978,7 +975,7 @@ def complete_cmd(
 
 
 # ===================================================================== dispatcher
-def run(argv: Optional[list[str]] = None) -> int:
+def run(argv: list[str] | None = None) -> int:
     """Entry point. Makes `sss <alias> ...` work as `connect <alias> ...`."""
     args = list(sys.argv[1:] if argv is None else argv)
     if args and not args[0].startswith("-") and args[0] not in APP_COMMANDS:

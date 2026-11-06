@@ -11,9 +11,9 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
+from ssh_desk.cli.output import fmt_duration
 from ssh_desk.gui.i18n import tr
 from ssh_desk.gui.widgets_common import ConfirmDialog, EmptyState, Page
-from ssh_desk.cli.output import fmt_duration
 
 
 class HistoryPage(Page):

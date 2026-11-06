@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 import shutil
 from pathlib import Path
-from typing import Optional
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ec, ed25519, rsa
@@ -49,15 +48,12 @@ class KeyService:
         )
         if key_type == "ed25519":
             private_key = ed25519.Ed25519PrivateKey.generate()
-            ssh_type = "ssh-ed25519"
         elif key_type == "rsa":
             if bits < 2048:
                 raise ValidationErrorX("RSA key size must be at least 2048 bits")
             private_key = rsa.generate_private_key(public_exponent=65537, key_size=bits)
-            ssh_type = "ssh-rsa"
         elif key_type == "ecdsa":
             private_key = ec.generate_private_key(ec.SECP256R1())
-            ssh_type = "ecdsa-sha2-nistp256"
         else:
             raise ValidationErrorX(f"Unsupported key type: {key_type}")
 
@@ -146,7 +142,7 @@ class KeyService:
                 raise NotFoundError(f"Key id={key_id} not found")
             return key
 
-    def get_by_path(self, path: str) -> Optional[SSHKey]:
+    def get_by_path(self, path: str) -> SSHKey | None:
         with self.ctx.db.session() as session:
             return session.scalars(select(SSHKey).where(SSHKey.private_key_path == str(path))).first()
 
@@ -252,7 +248,7 @@ class KeyService:
                 raise ValidationErrorX(f"Cannot read private key {path}: {kind} ({type(exc).__name__})") from exc
 
     @staticmethod
-    def _classify(key_obj) -> tuple[str, Optional[int]]:
+    def _classify(key_obj) -> tuple[str, int | None]:
         if isinstance(key_obj, ed25519.Ed25519PrivateKey):
             return "ed25519", None
         if isinstance(key_obj, rsa.RSAPrivateKey):

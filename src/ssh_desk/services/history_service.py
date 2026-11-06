@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import select
 
@@ -33,13 +31,15 @@ class HistoryService:
         self.ctx.events.publish(TOPIC_HISTORY, {"action": "start"})
         return history_id
 
-    def close(self, history_id: int, status: str, error_message: Optional[str] = None) -> None:
+    def close(self, history_id: int, status: str, error_message: str | None = None) -> None:
         error = (error_message or "")[:500]
+        from ssh_desk.database.models import utcnow
+
         with self.ctx.db.session() as session:
             row = session.get(ConnectionHistory, history_id)
             if not row:
                 return
-            row.disconnected_at = datetime.now().utcnow()
+            row.disconnected_at = utcnow()
             row.status = status
             if error:
                 row.error_message = error

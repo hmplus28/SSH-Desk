@@ -4,18 +4,15 @@ import logging
 import subprocess
 import time
 import uuid
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 from ssh_desk.core import constants
 from ssh_desk.core.exceptions import (
     HostKeyChangedError,
     HostKeyUnknownError,
-    KeyringUnavailableError,
     SSHConnectionError,
 )
 from ssh_desk.ssh import client, hostkeys
-from ssh_desk.utils.validation import validate_host
 
 log = logging.getLogger("ssh_desk.connection")
 
@@ -26,8 +23,8 @@ class PreparedSession:
     env: dict
     server: object
     remote_desc: str = ""
-    path: Optional[str] = None
-    exec_cmd: Optional[str] = None
+    path: str | None = None
+    exec_cmd: str | None = None
 
 
 @dataclass
@@ -68,7 +65,6 @@ class CliHostKeyGate:
         return answer in ("y", "yes")
 
     def on_changed(self, server, expected, actual) -> bool:
-        import sys
 
         raise HostKeyChangedError(
             f"WARNING: host key of '{server.host}' has CHANGED - possible man-in-the-middle!",
@@ -101,7 +97,7 @@ class ConnectionService:
         self.process_manager = ctx.process_manager
 
     # ------------------------------------------------------------------ host keys
-    def check_host_key(self, server, gate, port_override: Optional[int] = None) -> None:
+    def check_host_key(self, server, gate, port_override: int | None = None) -> None:
         """Enforce the security policy BEFORE any connection attempt."""
         host = server.host
         port = int(port_override or server.port)
@@ -168,14 +164,14 @@ class ConnectionService:
         self,
         server,
         *,
-        path_target: Optional[str] = None,
-        exec_cmd: Optional[str] = None,
-        user: Optional[str] = None,
-        port: Optional[int] = None,
-        saved_command: Optional[str] = None,
+        path_target: str | None = None,
+        exec_cmd: str | None = None,
+        user: str | None = None,
+        port: int | None = None,
+        saved_command: str | None = None,
         force_tty: bool = True,
         gate=None,
-        password_override: Optional[str] = None,
+        password_override: str | None = None,
         session_marker: bool = True,
         check_host_keys: bool = True,
     ) -> PreparedSession:
@@ -277,7 +273,6 @@ class ConnectionService:
     def proxy_exec(self, jump_server, target_host: str, target_port: int) -> None:
         """Replace the current process with `ssh -W` through the jump server (used by ProxyCommand)."""
         import os
-        import sys
 
         self._resolve_server(jump_server, None, None)
         self.check_host_key(jump_server, NonInteractiveGate())

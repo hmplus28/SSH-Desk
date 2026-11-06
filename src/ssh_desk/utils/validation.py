@@ -2,7 +2,7 @@
 
 import ipaddress
 import re
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -43,7 +43,7 @@ class ServerInput(BaseModel):
     port: int = Field(default=22, ge=1, le=65535)
     username: str = Field(min_length=1, max_length=64)
     auth_type: AuthType = "password"
-    default_path: Optional[str] = None
+    default_path: str | None = None
     connection_timeout: int = Field(default=15, ge=1, le=600)
     keep_alive: int = Field(default=30, ge=0, le=3600)
 
@@ -71,7 +71,7 @@ class ServerInput(BaseModel):
 
     @field_validator("default_path")
     @classmethod
-    def _default_path(cls, v: Optional[str]) -> Optional[str]:
+    def _default_path(cls, v: str | None) -> str | None:
         if v is None or v == "":
             return None
         v = v.strip()
@@ -107,8 +107,8 @@ class TunnelInput(BaseModel):
     tunnel_type: Literal["local", "remote", "dynamic"]
     local_host: str = "127.0.0.1"
     local_port: int = Field(ge=1, le=65535)
-    remote_host: Optional[str] = None
-    remote_port: Optional[int] = Field(default=None, ge=1, le=65535)
+    remote_host: str | None = None
+    remote_port: int | None = Field(default=None, ge=1, le=65535)
 
     @field_validator("local_host")
     @classmethod
@@ -117,7 +117,7 @@ class TunnelInput(BaseModel):
 
     @field_validator("remote_host")
     @classmethod
-    def _rh(cls, v: Optional[str]) -> Optional[str]:
+    def _rh(cls, v: str | None) -> str | None:
         return validate_host(v) if v else v
 
     @field_validator("remote_port", "remote_host")
@@ -156,7 +156,7 @@ class KeyInput(BaseModel):
         return v
 
 
-def sanitize_tags(tags: Optional[list]) -> list:
+def sanitize_tags(tags: list | None) -> list:
     out = []
     for tag in tags or []:
         tag = str(tag).strip()

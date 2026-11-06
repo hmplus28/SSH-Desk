@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
@@ -26,18 +25,18 @@ class ServerService:
         self,
         data: ServerInput,
         *,
-        group_id: Optional[int] = None,
-        jump_host_id: Optional[int] = None,
-        secret: Optional[str] = None,
-        private_key_path: Optional[str] = None,
+        group_id: int | None = None,
+        jump_host_id: int | None = None,
+        secret: str | None = None,
+        private_key_path: str | None = None,
         description: str = "",
-        tags: Optional[list] = None,
+        tags: list | None = None,
         favorite: bool = False,
         compression: bool = False,
         forward_agent: bool = False,
-        custom_options: Optional[list] = None,
-        preferred_auth: Optional[str] = None,
-        paths: Optional[list[PathInput]] = None,
+        custom_options: list | None = None,
+        preferred_auth: str | None = None,
+        paths: list[PathInput] | None = None,
     ) -> Server:
         with self.ctx.db.session() as session:
             self._ensure_alias_free(session, data.alias)
@@ -83,7 +82,7 @@ class ServerService:
         *,
         group_id=...,
         jump_host_id=...,
-        secret: Optional[str] = None,
+        secret: str | None = None,
         private_key_path=...,
         description=...,
         tags=...,
@@ -92,7 +91,7 @@ class ServerService:
         forward_agent=...,
         custom_options=...,
         preferred_auth=...,
-        paths: Optional[list[PathInput]] = None,
+        paths: list[PathInput] | None = None,
     ) -> Server:
         with self.ctx.db.session() as session:
             server = session.get(Server, server_id)
@@ -222,7 +221,7 @@ class ServerService:
                 raise NotFoundError(f"Server id={server_id} not found")
             return server
 
-    def get_by_alias(self, alias: str) -> Optional[Server]:
+    def get_by_alias(self, alias: str) -> Server | None:
         with self.ctx.db.session() as session:
             return session.scalars(
                 select(Server).where(Server.alias == alias.strip().lower())
@@ -331,7 +330,7 @@ class ServerService:
         self.ctx.events.publish(TOPIC_SERVERS, {"action": "update", "id": server_id})
         return server
 
-    def resolve_target(self, server: Server, target: Optional[str]) -> Optional[str]:
+    def resolve_target(self, server: Server, target: str | None) -> str | None:
         """Resolve CLI path argument: None -> default, name -> saved path, /abs -> itself."""
         if target is None or target == "":
             return server.default_path
@@ -347,7 +346,7 @@ class ServerService:
         )
 
     # ------------------------------------------------------------------ commands
-    def list_commands(self, server_id: Optional[int] = "any") -> list[SavedCommand]:
+    def list_commands(self, server_id: int | None = "any") -> list[SavedCommand]:
         with self.ctx.db.session() as session:
             query = select(SavedCommand).order_by(SavedCommand.category, SavedCommand.name)
             if server_id == "any":
@@ -358,7 +357,7 @@ class ServerService:
                 query = query.where(SavedCommand.server_id == server_id)
             return list(session.scalars(query))
 
-    def create_command(self, data: CommandInput, server_id: Optional[int] = None) -> SavedCommand:
+    def create_command(self, data: CommandInput, server_id: int | None = None) -> SavedCommand:
         with self.ctx.db.session() as session:
             exists = session.scalars(
                 select(SavedCommand).where(SavedCommand.name == data.name, SavedCommand.server_id == server_id)
@@ -379,7 +378,7 @@ class ServerService:
         self.ctx.events.publish(TOPIC_COMMANDS, {"action": "create"})
         return cmd
 
-    def update_command(self, command_id: int, data: CommandInput, server_id: Optional[int] = None) -> SavedCommand:
+    def update_command(self, command_id: int, data: CommandInput, server_id: int | None = None) -> SavedCommand:
         with self.ctx.db.session() as session:
             cmd = session.get(SavedCommand, command_id)
             if not cmd:
@@ -422,7 +421,7 @@ class ServerService:
             ).scalars().all()
             return list(rows)
 
-    def last_connection(self, server_id: int) -> Optional[ConnectionHistory]:
+    def last_connection(self, server_id: int) -> ConnectionHistory | None:
         with self.ctx.db.session() as session:
             return session.scalars(
                 select(ConnectionHistory)
@@ -433,14 +432,14 @@ class ServerService:
 
     # ------------------------------------------------------------------ helpers
     @staticmethod
-    def _ensure_alias_free(session, alias: str, exclude_id: Optional[int] = None) -> None:
+    def _ensure_alias_free(session, alias: str, exclude_id: int | None = None) -> None:
         query = select(Server).where(Server.alias == alias)
         if exclude_id:
             query = query.where(Server.id != exclude_id)
         if session.scalars(query).first():
             raise AliasExistsError(f"Alias '{alias}' already exists. Aliases must be unique.")
 
-    def _apply_secret(self, server: Server, secret: Optional[str], old_auth: Optional[str] = None) -> None:
+    def _apply_secret(self, server: Server, secret: str | None, old_auth: str | None = None) -> None:
         """Store/delete the keyring secret according to the (new) auth type."""
         if secret:
             server.secret_ref = self.ctx.credentials.store_server_password(server.id, server.alias, secret)

@@ -59,7 +59,7 @@ class Database:
     def _write_version(self, version: int) -> None:
         with self.engine.begin() as conn:
             conn.exec_driver_sql("DELETE FROM schema_version")
-            conn.exec_driver_sql("INSERT INTO schema_version (version) VALUES (%d)" % version)
+            conn.exec_driver_sql("INSERT INTO schema_version (version) VALUES (?)", (version,))
 
     @contextmanager
     def session(self):

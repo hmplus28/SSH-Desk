@@ -7,7 +7,6 @@ from typing import Optional
 
 from ssh_desk.core.config import AppConfig
 from ssh_desk.core.constants import (
-    ASKPASS_HELPER_NAME,
     CLI_WRAPPER_NAME,
     DB_FILE_NAME,
     KNOWN_HOSTS_NAME,
@@ -28,9 +27,9 @@ class AppContext:
 
     def __init__(
         self,
-        data_dir: Optional[Path] = None,
-        config_dir: Optional[Path] = None,
-        db_path: Optional[Path] = None,
+        data_dir: Path | None = None,
+        config_dir: Path | None = None,
+        db_path: Path | None = None,
         secret_store=None,
         quiet_logs: bool = False,
     ):

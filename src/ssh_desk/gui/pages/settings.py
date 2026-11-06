@@ -13,7 +13,6 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSpinBox,
     QVBoxLayout,
-    QWidget,
 )
 
 from ssh_desk.core.exceptions import SshDeskError

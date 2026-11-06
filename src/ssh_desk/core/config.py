@@ -1,8 +1,9 @@
 """TOML configuration (source of truth for user preferences) with safe defaults."""
 
 import re
-import tomllib
 from pathlib import Path
+
+import tomllib
 
 from ssh_desk.core.exceptions import ConfigError
 

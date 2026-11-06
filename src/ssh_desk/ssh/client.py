@@ -6,7 +6,6 @@ import shlex
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 from ssh_desk.core import constants
 from ssh_desk.ssh.askpass import ensure_askpass_helper
@@ -98,7 +97,7 @@ def _auth_argv(ctx, server) -> tuple[list[str], AuthContext]:
     return argv, auth
 
 
-def remote_command(path: Optional[str] = None, exec_cmd: Optional[str] = None, interactive: bool = True) -> Optional[str]:
+def remote_command(path: str | None = None, exec_cmd: str | None = None, interactive: bool = True) -> str | None:
     parts: list[str] = []
     if path:
         parts.append(f"cd -- {shlex.quote(path)}")
@@ -115,10 +114,10 @@ def build_connect_argv(
     ctx,
     server,
     *,
-    path: Optional[str] = None,
-    exec_cmd: Optional[str] = None,
-    user: Optional[str] = None,
-    port: Optional[int] = None,
+    path: str | None = None,
+    exec_cmd: str | None = None,
+    user: str | None = None,
+    port: int | None = None,
     force_tty: bool = True,
     session_marker: bool = True,
 ) -> tuple[list[str], dict]:
@@ -153,7 +152,7 @@ def build_exec_argv(ctx, server, command: str, *, user=None, port=None) -> tuple
     return build_connect_argv(ctx, server, exec_cmd=command, user=user, port=port, force_tty=False, session_marker=False)
 
 
-def build_test_argv(ctx, server, *, user=None, port=None, password_override_ref: Optional[str] = None) -> tuple[list[str], dict]:
+def build_test_argv(ctx, server, *, user=None, port=None, password_override_ref: str | None = None) -> tuple[list[str], dict]:
     argv = ["ssh"]
     argv += _base_options(ctx, server)
     argv += _jump_proxy_option(ctx, server)
@@ -185,7 +184,7 @@ def build_proxy_argv(ctx, jump_server, target_host: str, target_port: int) -> tu
     argv += [
         "-p", str(jump_server.port),
         "-N", "-T",
-        "-o", f"ExitOnForwardFailure=yes",
+        "-o", "ExitOnForwardFailure=yes",
         "-W", f"{target_host}:{target_port}",
         f"{jump_server.username}@{jump_server.host}",
     ]

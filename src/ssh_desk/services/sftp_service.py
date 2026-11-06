@@ -11,7 +11,7 @@ import tempfile
 import threading
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable
 
 from ssh_desk.core.exceptions import AuthError, HostKeyChangedError, HostKeyUnknownError, SftpError
 
@@ -85,7 +85,7 @@ class SftpSession:
         except OSError as exc:
             raise SftpError(f"Cannot remove {path}: {exc}") from exc
 
-    def remove_tree(self, path: str, progress: Optional[Callable[[str], None]] = None) -> None:
+    def remove_tree(self, path: str, progress: Callable[[str], None] | None = None) -> None:
         entries = self.list_dir(path)
         for entry in entries:
             full = f"{path.rstrip('/')}/{entry.name}"
@@ -109,12 +109,12 @@ class SftpSession:
         except OSError as exc:
             raise SftpError(f"Cannot chmod {path}: {exc}") from exc
 
-    def download(self, remote: str, local: str, progress: Optional[Callable[[int, int], None]] = None) -> str:
+    def download(self, remote: str, local: str, progress: Callable[[int, int], None] | None = None) -> str:
         size = self.sftp.stat(remote).st_size
         self.sftp.get(remote, local, callback=lambda done, _total: progress(done, size) if progress else None)
         return local
 
-    def upload(self, local: str, remote: str, progress: Optional[Callable[[int, int], None]] = None) -> str:
+    def upload(self, local: str, remote: str, progress: Callable[[int, int], None] | None = None) -> str:
         size = os.path.getsize(local)
         self.sftp.put(local, remote, callback=lambda done, _total: progress(done, size) if progress else None)
         return remote
@@ -147,7 +147,7 @@ class SftpService:
     def is_connected(self, server_id: int) -> bool:
         return server_id in self._sessions
 
-    def get(self, server_id: int) -> Optional[SftpSession]:
+    def get(self, server_id: int) -> SftpSession | None:
         return self._sessions.get(server_id)
 
     def connect(self, server, gate=None) -> SftpSession:
@@ -237,7 +237,7 @@ class SftpService:
 
     # ------------------------------------------------------------------ transfer between servers
     def transfer(self, src_server, src_path: str, dst_server, dst_path: str,
-                 progress: Optional[Callable[[int, int], None]] = None, gate=None) -> str:
+                 progress: Callable[[int, int], None] | None = None, gate=None) -> str:
         """Stream a file directly between two servers."""
         import paramiko
 

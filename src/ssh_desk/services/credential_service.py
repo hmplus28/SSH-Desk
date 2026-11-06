@@ -8,9 +8,8 @@ Security rules enforced here:
 
 import json
 import logging
-from typing import Optional
 
-from ssh_desk.core.exceptions import KeyringUnavailableError
+from ssh_desk.core.exceptions import KeyringUnavailableError, SecretNotFoundError
 
 log = logging.getLogger("ssh_desk.credentials")
 
@@ -67,17 +66,15 @@ class SecretServiceStore:
     def store(self, attrs: dict, secret: str, label: str) -> str:
         collection = self._get_collection()
         full_attrs = {**attrs, APP_ATTR: "ssh-desk", SCHEMA_ATTR: SCHEMA_VALUE}
-        import secretstorage
 
         for item in collection.search_items({APP_ATTR: "ssh-desk", **attrs}):
             item.delete()
         collection.create_item(label, full_attrs, secret.encode("utf-8"), replace=True)
         return _ref(attrs)
 
-    def retrieve(self, ref: str) -> Optional[str]:
+    def retrieve(self, ref: str) -> str | None:
         attrs = json.loads(ref)
         collection = self._get_collection()
-        import secretstorage
 
         for item in collection.search_items(attrs):
             if item.is_locked():
@@ -122,7 +119,7 @@ class MemorySecretStore:
         self._items[ref] = (dict(attrs), secret, label)
         return ref
 
-    def retrieve(self, ref: str) -> Optional[str]:
+    def retrieve(self, ref: str) -> str | None:
         item = self._items.get(ref)
         return item[1] if item else None
 
@@ -153,7 +150,7 @@ class CredentialService:
         attrs = {"ssh-desk.type": "server", "ssh-desk.id": str(server_id)}
         return self.store.store(attrs, password, f"SSH Desk - server: {alias}")
 
-    def get_server_password(self, server) -> Optional[str]:
+    def get_server_password(self, server) -> str | None:
         ref = getattr(server, "secret_ref", None)
         if not ref:
             return None
@@ -184,7 +181,7 @@ class CredentialService:
         attrs = {"ssh-desk.type": "key", "ssh-desk.name": key_name}
         return self.store.store(attrs, passphrase, f"SSH Desk - key: {key_name}")
 
-    def get_key_passphrase(self, ref: str) -> Optional[str]:
+    def get_key_passphrase(self, ref: str) -> str | None:
         secret = self.store.retrieve(ref)
         if secret:
             from ssh_desk.utils.logging_setup import register_secret

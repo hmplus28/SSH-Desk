@@ -3,7 +3,6 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from ssh_desk.core.exceptions import ConfigError, NotFoundError
 from ssh_desk.ssh.config_manager import default_ssh_config_path, parse_ssh_config
@@ -35,7 +34,7 @@ class TransferService:
         self.ctx = ctx
 
     # ------------------------------------------------------------------ ssh config import
-    def preview_ssh_config(self, path: Optional[str] = None) -> list[ImportRow]:
+    def preview_ssh_config(self, path: str | None = None) -> list[ImportRow]:
         config_path = Path(path).expanduser() if path else default_ssh_config_path()
         if not config_path.exists():
             raise NotFoundError(f"SSH config not found: {config_path}")
@@ -227,6 +226,25 @@ class TransferService:
                 group_map[group["name"]] = next(
                     (g.id for g in self.ctx.servers.list_groups() if g.name == group["name"]), None
                 )
+
+        # restore key registry entries (files are referenced, not copied)
+        from ssh_desk.database.models import SSHKey
+
+        for key in doc.get("keys", []):
+            if self.ctx.keys.get_by_path(key["private_key_path"]) or any(
+                k.name == key["name"] for k in self.ctx.keys.list()
+            ):
+                continue
+            with self.ctx.db.session() as session:
+                session.add(SSHKey(
+                    name=key["name"],
+                    private_key_path=key["private_key_path"],
+                    public_key_path=key.get("public_key_path") or None,
+                    key_type=key.get("key_type", "unknown"),
+                    fingerprint=key.get("fingerprint") or None,
+                ))
+                session.commit()
+            report["keys"] += 1
 
         for item in doc.get("servers", []):
             if self.ctx.servers.get_by_alias(item["alias"]):

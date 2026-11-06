@@ -1,6 +1,5 @@
 """Add/Edit server dialog with General / Authentication / Connection / Advanced tabs."""
 
-from typing import Optional
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -16,9 +15,9 @@ from PySide6.QtWidgets import (
     QPlainTextEdit,
     QPushButton,
     QSpinBox,
-    QTabWidget,
     QTableWidget,
     QTableWidgetItem,
+    QTabWidget,
     QVBoxLayout,
     QWidget,
 )
@@ -29,7 +28,7 @@ from ssh_desk.utils.validation import PathInput, ServerInput
 
 
 class ServerDialog(QDialog):
-    def __init__(self, ctx, parent=None, server_id: Optional[int] = None):
+    def __init__(self, ctx, parent=None, server_id: int | None = None):
         super().__init__(parent)
         self.ctx = ctx
         self.server_id = server_id
@@ -264,7 +263,7 @@ class ServerDialog(QDialog):
             self._add_path_row(p.name, p.path, p.is_default)
         self._auth_changed()
 
-    def _collect(self) -> tuple[Optional[ServerInput], dict]:
+    def _collect(self) -> tuple[ServerInput | None, dict]:
         try:
             data = ServerInput(
                 name=self.f_name.text().strip() or self.f_alias.text().strip(),

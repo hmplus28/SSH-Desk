@@ -6,17 +6,13 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import (
     QApplication,
-    QButtonGroup,
-    QFrame,
     QHBoxLayout,
     QInputDialog,
     QLabel,
-    QLineEdit,
     QListWidget,
     QListWidgetItem,
     QMainWindow,
     QMessageBox,
-    QPushButton,
     QStackedWidget,
     QVBoxLayout,
     QWidget,
@@ -121,8 +117,8 @@ class MainWindow(QMainWindow):
         from ssh_desk.gui.pages.files import FilesPage
         from ssh_desk.gui.pages.history import HistoryPage
         from ssh_desk.gui.pages.keys import KeysPage
-        from ssh_desk.gui.pages.servers import ServersPage
         from ssh_desk.gui.pages.server_details import ServerDetailsPage
+        from ssh_desk.gui.pages.servers import ServersPage
         from ssh_desk.gui.pages.settings import SettingsPage
         from ssh_desk.gui.pages.terminal_page import TerminalPage
         from ssh_desk.gui.pages.tunnels import TunnelsPage

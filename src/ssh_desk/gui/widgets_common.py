@@ -2,7 +2,6 @@
 
 import threading
 import traceback
-from typing import Optional
 
 from PySide6.QtCore import QObject, Qt, QThread, Signal
 from PySide6.QtWidgets import (
@@ -14,12 +13,11 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QProgressBar,
     QPushButton,
-    QSizePolicy,
     QVBoxLayout,
     QWidget,
 )
 
-from ssh_desk.core.exceptions import HostKeyChangedError, HostKeyUnknownError
+from ssh_desk.core.exceptions import HostKeyChangedError
 from ssh_desk.gui.i18n import tr
 
 
@@ -155,7 +153,6 @@ class HostKeyGate(QObject):
             decision["value"] = dialog.exec() == QDialog.DialogCode.Accepted
             event.set()
 
-        from PySide6.QtCore import QMetaObject, Qt as QtConst, Q_ARG, Slot
 
         self._invoke(ask)
         event.wait()

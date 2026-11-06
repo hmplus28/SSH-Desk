@@ -3,20 +3,19 @@
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
 class SshConfigEntry:
     host: str
-    hostname: Optional[str] = None
-    user: Optional[str] = None
-    port: Optional[int] = None
-    identity_file: Optional[str] = None
-    proxy_jump: Optional[str] = None
-    server_alive_interval: Optional[int] = None
-    compression: Optional[bool] = None
-    forward_agent: Optional[bool] = None
+    hostname: str | None = None
+    user: str | None = None
+    port: int | None = None
+    identity_file: str | None = None
+    proxy_jump: str | None = None
+    server_alive_interval: int | None = None
+    compression: bool | None = None
+    forward_agent: bool | None = None
     skipped_options: list = field(default_factory=list)
 
     @property
@@ -40,7 +39,7 @@ def _tokenize(line: str) -> list[str]:
 
 def parse_ssh_config(text: str) -> list[SshConfigEntry]:
     entries: list[SshConfigEntry] = []
-    current: Optional[SshConfigEntry] = None
+    current: SshConfigEntry | None = None
     seen: set[str] = set()
 
     for raw_line in text.splitlines():
