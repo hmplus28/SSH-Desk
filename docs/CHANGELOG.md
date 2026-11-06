@@ -40,3 +40,22 @@ All notable changes are documented here. Format based on
   Reference, Architecture, Security, Development, Troubleshooting, Changelog.
 
 [1.0.0]: https://github.com/hmplus28/SSH-Desk/releases/tag/v1.0.0
+
+## [1.0.1] - 2026-11-07
+
+### Added
+- **Network resilience for installs** (outages / blocked PyPI):
+  - `scripts/mirrors.sh`: shared mirror-fallback library — every pip call
+    walks a chain (`pypi.org` → ArvanCloud IR → TUNA → Aliyun → Tencent) and
+    skips unreachable mirrors automatically.
+  - `scripts/install.sh`: `--mirror URL`, `--mirror-name pypi|ir|tuna|aliyun|
+    tencent`, `--no-mirrors`, `--offline`, `--wheelhouse DIR`, `--verbose`.
+  - `scripts/download_wheels.sh`: pre-download all wheels (incl. pip/setuptools/
+    wheel) for a fully offline `install.sh --offline` (`--no-index`).
+  - `scripts/build.sh`: same fallback chain for PyInstaller/DEB builds.
+  - Env overrides: `SSH_DESK_PIP_INDEX_URL`, `SSH_DESK_MIRRORS`,
+    `SSH_DESK_WHEELHOUSE`, `SSH_DESK_PIP_TIMEOUT`, `SSH_DESK_PIP_RETRIES`.
+  - Offline/mirror flow tested end-to-end (bad-mirror fallback, forced-mirror
+    failure, offline venv install, actionable errors).
+
+[1.0.1]: https://github.com/hmplus28/SSH-Desk/releases/tag/v1.0.1

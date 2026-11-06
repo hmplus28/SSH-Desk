@@ -102,6 +102,46 @@ sss config completions --shell zsh --install
 #   autoload -Uz compinit && compinit
 ```
 
+## Weak or interrupted network: mirrors and offline install
+
+Every pip call made by the scripts walks a **mirror fallback chain** — if one
+mirror is unreachable it is skipped automatically and the next one is tried
+(`pypi.org` → ArvanCloud (IR) → TUNA → Aliyun → Tencent). Nothing to configure
+for this; it just works when some mirrors are down.
+
+Force one mirror when you know which one works on your network:
+
+```bash
+bash scripts/install.sh --mirror-name ir        # ArvanCloud (Iran)
+bash scripts/install.sh --mirror-name tuna      # TUNA (China)
+bash scripts/install.sh --mirror https://pypi.org/simple
+# or by env: SSH_DESK_PIP_INDEX_URL=... bash scripts/install.sh
+```
+
+### Fully offline install (two machines, or before an outage)
+
+1. On a machine **with** internet (same Python major version and architecture),
+   pre-download every wheel — through any mirror you like:
+
+   ```bash
+   bash scripts/download_wheels.sh --mirror-name ir
+   ```
+
+2. Move/copy the repo folder (it now contains `vendor/wheels/`) to the target
+   machine and install with **no network at all**:
+
+   ```bash
+   bash scripts/install.sh --offline
+   ```
+
+`pip` will refuse to touch the network in `--offline` mode
+(`--no-index --find-links vendor/wheels`), so a broken connection cannot break
+the install halfway. Custom location: `--wheelhouse /path/to/wheels` or
+`SSH_DESK_WHEELHOUSE=...`.
+
+`scripts/build.sh` (PyInstaller bundle) uses the same fallback chain, so DEB
+packaging also survives failing mirrors.
+
 ## Upgrade
 
 ```bash

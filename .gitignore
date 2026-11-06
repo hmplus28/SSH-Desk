@@ -18,3 +18,4 @@ nohup.out
 .idea/
 .vscode/
 packaging/_staging/
+vendor/
