@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ssh-desk"
+version = "1.0.0"
+description = "SSH Desk - professional SSH connection manager for Ubuntu (GUI + CLI + PTY terminal + SFTP)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "hmplus28" }]
+keywords = ["ssh", "sftp", "terminal", "manager", "ubuntu"]
+classifiers = [
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: System Administrators",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: System :: Networking",
+]
+dependencies = [
+    "PySide6-Essentials>=6.6",
+    "typer>=0.12",
+    "SQLAlchemy>=2.0",
+    "pydantic>=2.5",
+    "paramiko>=3.4",
+    "pyte>=0.8.1",
+    "SecretStorage>=3.3",
+    "tomli-w>=1.0",
+    "cryptography>=41",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.4", "mypy>=1.8"]
+
+[project.scripts]
+ssh-desk = "ssh_desk.main:run"
+ssh-desk-cli = "ssh_desk.cli.main:run"
+ssh-desk-askpass = "ssh_desk.ssh.askpass:run"
+ssh-desk-tunnel-runner = "ssh_desk.ssh.tunnel_runner:run"
+
+[project.urls]
+Homepage = "https://github.com/hmplus28/SSH-Desk"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ssh_desk = ["gui/resources/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501", "B008", "B904", "UP035", "UP006", "UP007"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+no_strict_optional = true
