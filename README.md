@@ -6,7 +6,11 @@
 
 `sss prod` · `sss prod nginx` · `sss prod --exec "uptime"`
 
+[English](README.md) · [فارسی](README.fa.md) · [العربية](README.ar.md) · [简体中文](README.zh.md) · [Русский](README.ru.md) · [Español](README.es.md) · [Français](README.fr.md)
+
 </div>
+
+<p dir="rtl" align="right"><b>به فارسی:</b> SSH Desk یک مدیر اتصال SSH واقعی برای اوبونتو است — رمزها فقط در GNOME Keyring، ترمینال PTY واقعی، CLI بدون نیاز به GUI، و نصب آفلاین با میرورها برای اینترنت ناپایدار. راهنمای کامل: <a href="docs/SSH-Desk-User-Guide-fa.pdf">راهنمای کاربر (PDF فارسی)</a> · <a href="README.fa.md">README فارسی</a></p>
 
 SSH Desk is a real, installable product (not a prototype) for managing all of your
 SSH servers: passwords are stored **only** in the GNOME Keyring (Secret Service),
@@ -16,6 +20,9 @@ the SSH engine is the **system OpenSSH**, and the built-in terminal is a **real 
 - 🖥️ **Desktop GUI** (PySide6): dark/light themes, Persian/English (full RTL), real terminal tabs, SFTP file manager, tunnels, keys, history
 - ⌨️ **CLI** (Typer): works **without** the GUI, configurable command name (`sss`, `cnc`, `sshgo`, …), bash/zsh completion with alias completion
 - 🔐 **Security-first**: strict host key checking with fingerprint dialogs, secrets never in DB/logs/argv, no `sshpass`, no `StrictHostKeyChecking=no`
+- 🌐 **Network-outage-proof**: PyPI mirror fallback chain (official → ArvanCloud IR → TUNA → Aliyun → Tencent) + fully offline install (`install.sh --offline`)
+
+📄 **Persian user guide (14-page illustrated PDF): [docs/SSH-Desk-User-Guide-fa.pdf](docs/SSH-Desk-User-Guide-fa.pdf)** — install (incl. offline/mirror flow), full CLI reference, terminal, SFTP, tunnels, security model.
 
 ---
 
@@ -72,6 +79,7 @@ sss --help               # full reference
 | Commands | Saved commands per server or global, confirmation for dangerous ones |
 | History | Connect/disconnect, duration, status, errors (no terminal content, no passwords) |
 | Import/Export | `~/.ssh/config` import with preview+dedupe, TOML backup/restore (secrets opt-in) |
+| Install resilience | PyPI mirror fallback chain + offline wheelhouse install (`download_wheels.sh` → `install.sh --offline`) |
 
 ## Security model (short version)
 
@@ -91,7 +99,8 @@ ruff check .    # clean
 ```
 
 Architecture and internals: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) ·
-[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) · [docs/USER_GUIDE.md](docs/USER_GUIDE.md)
+[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) · [docs/USER_GUIDE.md](docs/USER_GUIDE.md) ·
+[Guide PDF (fa)](docs/SSH-Desk-User-Guide-fa.pdf)
 
 ## Requirements
 

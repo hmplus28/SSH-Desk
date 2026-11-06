@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+<meta charset="UTF-8">
+<title>راهنمای کاربر SSH Desk</title>
+<style>
+/* ================= page ================= */
+@page { size: 720px 1020px; margin: 0; }
+:root {
+    --bg:     #0A1122;
+    --panel:  #121B31;
+    --border: #1E2A47;
+    --text:   #E8EEF9;
+    --muted:  #93A6C4;
+    --accent: #35D49A;
+}
+html, body {
+    margin: 0; padding: 0;
+    width: 720px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Vazirmatn', 'DejaVu Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.95;
+    overflow-wrap: break-word;
+}
+@media screen {
+    html { display: flex; justify-content: center; background: #04070F; }
+    body { margin: 20px auto; box-shadow: 0 0 60px rgba(0,0,0,.65); }
+}
+/* ================= cover ================= */
+.cover {
+    width: 720px; height: 1020px; box-sizing: border-box;
+    break-after: page;
+    overflow: hidden;
+    position: relative;
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: 56px 60px;
+}
+.glow { position: absolute; border-radius: 50%; filter: blur(90px); }
+.glow.g1 { width: 420px; height: 420px; background: rgba(53,212,154,.14); top: 0; left: 0; transform: translate(-120px, -120px); }
+.glow.g2 { width: 320px; height: 320px; background: rgba(53,212,154,.10); top: 640px; left: 380px; }
+.cover-badge {
+    position: absolute; top: 52px; right: 60px;
+    font-size: 12.5px; letter-spacing: .5px;
+    color: var(--muted);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 7px 16px; background: rgba(18,27,49,.7);
+}
+.cover-badge b { color: var(--accent); font-weight: 600; }
+.cover-kicker { color: var(--muted); font-size: 17px; font-weight: 500; margin-bottom: 6px; }
+.cover-title { font-size: 64px; font-weight: 800; line-height: 1.25; margin: 0 0 4px; }
+.cover-en {
+    direction: ltr; text-align: right;
+    font-size: 30px; font-weight: 700; color: var(--accent);
+    letter-spacing: 1px; margin-bottom: 18px;
+}
+.cover-sub { color: var(--muted); font-size: 15.5px; max-width: 520px; line-height: 2.0; }
+.term {
+    direction: ltr; text-align: left;
+    background: var(--panel);
+    border: 1px solid var(--border); border-radius: 14px;
+    margin: 30px 0 0; max-width: 520px;
+    box-shadow: 0 18px 40px rgba(0,0,0,.35);
+}
+.term-bar {
+    display: flex; align-items: center; gap: 7px;
+    padding: 11px 14px; border-bottom: 1px solid var(--border);
+}
+.dot { width: 11px; height: 11px; border-radius: 50%; }
+.dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
+.term-title { font-family: 'DejaVu Sans Mono', monospace; font-size: 11px; color: var(--muted); margin-left: 8px; }
+.term-body {
+    font-family: 'DejaVu Sans Mono', monospace;
+    font-size: 12.5px; line-height: 2.05;
+    padding: 14px 18px 16px; color: #C9D6EA;
+}
+.term-body .p { color: var(--accent); font-weight: 700; }
+.term-body .ok { color: var(--accent); }
+.term-body .dim { color: #64748F; }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; max-width: 100%; margin-top: 26px; }
+.chip {
+    flex: 0 1 auto; min-width: 0;
+    font-size: 12.5px; font-weight: 500;
+    color: var(--text);
+    background: rgba(53,212,154,.10);
+    border: 1px solid rgba(53,212,154,.35);
+    border-radius: 999px; padding: 6px 15px;
+}
+.cover-bottom {
+    position: absolute; bottom: 46px; right: 60px; left: 60px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid var(--border); padding-top: 18px;
+    font-size: 12.5px; color: var(--muted);
+}
+.cover-bottom .repo { direction: ltr; font-family: 'DejaVu Sans Mono', monospace; font-size: 11.5px; }
+/* ================= flow content ================= */
+.main-content { padding: 58px 58px 44px; }
+.chapter-header { break-after: avoid; break-inside: avoid; margin-top: 26px; }
+.chapter-header.first { margin-top: 0; }
+.section-tag {
+    display: inline-block;
+    font-size: 12px; font-weight: 600; letter-spacing: 1px;
+    color: var(--accent);
+    border: 1px solid rgba(53,212,154,.4);
+    border-radius: 6px; padding: 3px 12px;
+    margin-bottom: 10px;
+}
+.section-title { font-size: 27px; font-weight: 800; line-height: 1.5; margin: 0 0 6px; }
+.divider {
+    height: 6px; width: 84px; border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), rgba(53,212,154,0));
+    margin: 4px 0 14px;
+}
+.body-text { color: #D7E1F2; margin: 0 0 10px; text-align: justify; }
+.body-text b { color: var(--text); }
+.lead { color: var(--text); font-size: 15.5px; }
+h3.sub {
+    break-after: avoid;
+    font-size: 16.5px; font-weight: 700;
+    margin: 16px 0 6px; color: var(--text);
+}
+h3.sub .tick { color: var(--accent); }
+/* code */
+.code {
+    direction: ltr; text-align: left;
+    font-family: 'DejaVu Sans Mono', monospace;
+    font-size: 12.3px; line-height: 1.85;
+    background: var(--panel);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 13px 17px; margin: 4px 0 12px;
+    color: #C9D6EA;
+    break-inside: avoid;
+    white-space: pre;
+    overflow-x: hidden;
+}
+.code .c  { color: #64748F; }
+.code .g  { color: var(--accent); font-weight: 700; }
+code.inline {
+    direction: ltr; unicode-bidi: embed;
+    font-family: 'DejaVu Sans Mono', monospace;
+    font-size: 12px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px; padding: 1px 7px;
+    color: var(--accent);
+}
+/* tables */
+table { width: 100%; border-collapse: collapse; margin: 4px 0 14px; break-inside: avoid; font-size: 13.2px; }
+thead { display: table-header-group; }
+tr { break-inside: avoid; }
+th {
+    text-align: right; font-weight: 700;
+    color: var(--accent);
+    background: rgba(53,212,154,.08);
+    border-bottom: 1.5px solid rgba(53,212,154,.4);
+    padding: 8px 12px;
+}
+td {
+    text-align: right; color: #D7E1F2;
+    border-bottom: 1px solid var(--border);
+    padding: 7.5px 12px; vertical-align: top;
+}
+td .cmd { direction: ltr; unicode-bidi: embed; display: inline-block; font-family: 'DejaVu Sans Mono', monospace; font-size: 12px; color: var(--accent); }
+/* cards */
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 15px 18px; margin: 0 0 12px;
+    break-inside: avoid;
+}
+.card-title { font-weight: 700; color: var(--text); font-size: 14.5px; margin-bottom: 3px; }
+.card-title .n { color: var(--accent); font-weight: 800; }
+.card p { margin: 0; color: var(--muted); font-size: 13.2px; line-height: 1.9; text-align: justify; }
+.grid-2 { display: flex; flex-wrap: wrap; gap: 12px; max-width: 100%; margin-bottom: 12px; }
+.grid-2 .card { flex: 1 1 46%; min-width: 260px; max-width: 100%; margin: 0; }
+.grid-3 { display: flex; flex-wrap: wrap; gap: 12px; max-width: 100%; margin-bottom: 12px; }
+.grid-3 .card { flex: 1 1 30%; min-width: 180px; max-width: 100%; margin: 0; }
+.callout {
+    border-right: 3px solid var(--accent);
+    background: rgba(53,212,154,.07);
+    border-radius: 8px;
+    padding: 11px 16px; margin: 2px 0 14px;
+    font-size: 13.4px; color: #D7E1F2;
+    break-inside: avoid; text-align: justify;
+}
+.callout b { color: var(--accent); }
+/* toc grid */
+.toc-grid { display: flex; flex-wrap: wrap; gap: 10px; max-width: 100%; margin: 8px 0 4px; }
+.toc-item {
+    flex: 1 1 46%; min-width: 260px; max-width: 100%;
+    display: flex; align-items: center; gap: 12px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 9px 14px;
+    break-inside: avoid;
+}
+.toc-item .no {
+    color: var(--accent); font-weight: 800; font-size: 15px;
+    min-width: 30px; text-align: center;
+}
+.toc-item .t { font-size: 13.8px; font-weight: 600; color: #D7E1F2; }
+/* stats */
+.stats { display: flex; flex-wrap: wrap; gap: 12px; max-width: 100%; margin: 6px 0 14px; }
+.stat {
+    flex: 1 1 30%; min-width: 170px; max-width: 100%;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; text-align: center;
+    break-inside: avoid;
+}
+.stat .v { font-size: 26px; font-weight: 800; color: var(--accent); line-height: 1.4; }
+.stat .k { font-size: 12.5px; color: var(--muted); }
+/* lists */
+ul.body-list { margin: 0 0 12px; padding: 0 22px 0 0; color: #D7E1F2; }
+ul.body-list li { margin-bottom: 5px; break-inside: avoid; }
+ul.body-list li::marker { color: var(--accent); }
+/* kbd */
+.kbd {
+    direction: ltr; unicode-bidi: embed; display: inline-block;
+    font-family: 'DejaVu Sans Mono', monospace; font-size: 11.5px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-bottom-width: 2.5px; border-radius: 6px;
+    padding: 1px 8px; color: var(--text);
+}
+/* ================= ending ================= */
+.ending {
+    width: 720px; height: 1020px; box-sizing: border-box;
+    break-before: page;
+    overflow: hidden; position: relative;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center; padding: 60px;
+}
+.ending .big { font-size: 34px; font-weight: 800; line-height: 1.6; margin-bottom: 14px; }
+.ending .sub { color: var(--muted); font-size: 15px; max-width: 460px; line-height: 2.1; }
+.ending .repo-strip {
+    direction: ltr;
+    font-family: 'DejaVu Sans Mono', monospace; font-size: 13px;
+    color: var(--accent);
+    border: 1px solid rgba(53,212,154,.4); border-radius: 999px;
+    padding: 9px 22px; margin-top: 30px;
+}
+.ending .foot { position: absolute; bottom: 46px; right: 60px; left: 60px; border-top: 1px solid var(--border); padding-top: 16px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<!-- ============================ COVER ============================ -->
+<div class="cover">
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+    <div class="cover-badge"><b>SSH&nbsp;Desk</b> · نسخهٔ ۱٫۰ · راهنمای کاربر</div>
+
+    <div class="cover-kicker">مدیر اتصال SSH حرفه‌ای برای اوبونتو</div>
+    <div class="cover-title">راهنمای کاربر</div>
+    <div class="cover-en">SSH Desk</div>
+    <div class="cover-sub">از ثبت سرور تا شِل تعاملی واقعی — با یک دستور. رابط گرافیکی، خط فرمان و هستهٔ مشترک؛ رمزها فقط در GNOME Keyring و موتور SSH همان OpenSSH سیستم است.</div>
+
+    <div class="term">
+        <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">terminal — ubuntu</span></div>
+        <div class="term-body">
+<div><span class="p">$</span> sss add</div>
+<div class="dim">  server "Production" saved — secret stored in GNOME Keyring</div>
+<div><span class="p">$</span> sss prod</div>
+<div class="ok">  ✓ connected → root@192.168.1.1 → /var/www</div>
+<div class="dim">  root@production:/var/www# _</div>
+        </div>
+    </div>
+
+    <div class="chips">
+        <span class="chip">ترمینال PTY واقعی</span>
+        <span class="chip">رمزها فقط در Keyring</span>
+        <span class="chip">مدیر فایل SFTP</span>
+        <span class="chip">تونل Local/Remote/SOCKS</span>
+        <span class="chip">نصب آفلاین با میرورها</span>
+    </div>
+
+    <div class="cover-bottom">
+        <div>ویرایش ۱٫۰ — آبان ۱۴۰۵ / نوامبر ۲۰۲۶</div>
+        <div class="repo">github.com/hmplus28/SSH-Desk</div>
+    </div>
+</div>
+
+<!-- ============================ CONTENT ============================ -->
+<div class="main-content">
+
+    <!-- TOC -->
+    <div class="chapter-header first">
+        <div class="section-tag">فهرست</div>
+        <div class="section-title">در این راهنما</div>
+        <div class="divider"></div>
+    </div>
+    <div class="toc-grid">
+        <div class="toc-item"><div class="no">۰۱</div><div class="t">معرفی SSH Desk</div></div>
+        <div class="toc-item"><div class="no">۰۲</div><div class="t">نصب و راه‌اندازی</div></div>
+        <div class="toc-item"><div class="no">۰۳</div><div class="t">شروع سریع: اولین سرور</div></div>
+        <div class="toc-item"><div class="no">۰۴</div><div class="t">اتصال و مدیریت مسیرها</div></div>
+        <div class="toc-item"><div class="no">۰۵</div><div class="t">مرجع کامل خط فرمان sss</div></div>
+        <div class="toc-item"><div class="no">۰۶</div><div class="t">رابط گرافیکی</div></div>
+        <div class="toc-item"><div class="no">۰۷</div><div class="t">ترمینال واقعی (PTY)</div></div>
+        <div class="toc-item"><div class="no">۰۸</div><div class="t">مدیریت فایل با SFTP</div></div>
+        <div class="toc-item"><div class="no">۰۹</div><div class="t">کلیدها، تونل‌ها و دستورات</div></div>
+        <div class="toc-item"><div class="no">۱۰</div><div class="t">مدل امنیتی</div></div>
+        <div class="toc-item"><div class="no">۱۱</div><div class="t">پشتیبان‌گیری و عیب‌یابی</div></div>
+    </div>
+
+    <!-- CH 1 -->
+    <div class="chapter-header">
+        <div class="section-tag">فصل ۰۱</div>
+        <div class="section-title">معرفی SSH Desk</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text lead">SSH Desk یک محصول واقعی و قابل‌نصب برای مدیریت همهٔ سرورهای SSH شما روی اوبونتو است؛ نه یک نمونهٔ نمایشی. سه ماژول — رابط گرافیکی، خط فرمان و هستهٔ مرکزی — دقیقاً روی یک دیتابیس و یک مخزن رمز مشترک کار می‌کنند: سروری را در GUI ثبت می‌کنید و در همان لحظه از هر ترمینالی با <code class="inline">sss prod</code> به آن وصل می‌شوید؛ حتی وقتی GUI اصلاً در حال اجرا نیست.</p>
+    <p class="body-text">موتور اتصال، همان <b>OpenSSH سیستم</b> است؛ پروتکل SSH دوباره پیاده‌سازی نشده تا رفتار اتصال دقیقاً مثل خودِ اوبونتو باشد. ترمینال داخلی یک <b>PTY واقعی</b> است: رنگ‌ها، کلیدهای جهت‌دار، <b>Ctrl+C</b> و اجرای vim و nano همه به‌درستی کار می‌کنند. رمزهای عبور فقط در <b>GNOME Keyring</b> ذخیره می‌شوند و هرگز به دیتابیس، لاگ، آرگومان دستور یا متغیر محیطی راه نمی‌یابند.</p>
+    <div class="grid-3">
+        <div class="card"><div class="card-title"><span class="n">GUI</span> — رابط گرافیکی</div><p>PySide6 با تم تیره/روشن، دو زبانهٔ فارسی/انگلیسی با RTL کامل، ترمینال چندزبانه و مدیریت فایل.</p></div>
+        <div class="card"><div class="card-title"><span class="n">CLI</span> — خط فرمان</div><p>دستور <code class="inline">sss</code> بدون نیاز به GUI؛ نام دستور قابل تغییر؛ تکمیل خودکار bash/zsh.</p></div>
+        <div class="card"><div class="card-title"><span class="n">Core</span> — هستهٔ مشترک</div><p>SQLite + SQLAlchemy با مهاجرت‌ها، سرویس Keyring، سازندهٔ دستور ssh و سیاست Host Key.</p></div>
+    </div>
+    <div class="stats">
+        <div class="stat"><div class="v">۳</div><div class="k">ماژول با یک موتور</div></div>
+        <div class="stat"><div class="v">۹</div><div class="k">صفحه در رابط گرافیکی</div></div>
+        <div class="stat"><div class="v">۳۰+</div><div class="k">زیردستور خط فرمان</div></div>
+    </div>
+
+    <!-- CH 2 -->
+    <div class="chapter-header">
+        <div class="section-tag">فصل ۰۲</div>
+        <div class="section-title">نصب و راه‌اندازی</div>
+        <div class="divider"></div>
+    </div>
+    <h3 class="sub"><span class="tick">›</span> پیش‌نیازها</h3>
+    <div class="code"><span class="c"># Ubuntu 22.04 / 24.04+</span>
+sudo apt update
+sudo apt install -y openssh-client gnome-keyring libsecret-1-0 \
+     python3 python3-venv python3-pip</div>
+    <h3 class="sub"><span class="tick">›</span> گزینهٔ الف — نصب سطح کاربر (پیشنهادی، بدون sudo)</h3>
+    <div class="code">git clone https://github.com/hmplus28/SSH-Desk.git
+cd SSH-Desk
+bash scripts/install.sh</div>
+    <p class="body-text">این اسکریپت پایتون و OpenSSH را بررسی می‌کند، محیط مجازی را در <code class="inline">~/.local/share/ssh-desk/venv</code> می‌سازد، بسته را با همهٔ وابستگی‌ها نصب می‌کند و در <code class="inline">~/.local/bin</code> میان‌برهای <code class="inline">ssh-desk</code> (رابط گرافیکی)، <code class="inline">ssh-desk-cli</code>، <code class="inline">ssh-desk-askpass</code> و <code class="inline">sss</code> را ایجاد می‌کند؛ سپس تکمیل خودکار bash و آیکن برنامه را هم نصب می‌کند.</p>
+    <h3 class="sub"><span class="tick">›</span> گزینهٔ ب — بستهٔ DEB سراسری</h3>
+    <div class="code">bash scripts/package_deb.sh
+sudo apt install ./dist/ssh-desk_1.0.0_amd64.deb</div>
+    <p class="body-text">بستهٔ DEB یک حباب مستقل PyInstaller را در <code class="inline">/opt/ssh-desk</code> نصب می‌کند و ورودی منو و آیکن سیستمی را ثبت می‌کند. ارتقا با نصب بستهٔ جدیدتر در جای خود انجام می‌شود و داده‌ها و رمزهای شما دست‌نخورده می‌مانند.</p>
+    <h3 class="sub"><span class="tick">›</span> اینترنت ضعیف یا قطع: میرورها و نصب آفلاین</h3>
+    <p class="body-text">اگر شبکهٔ شما ناپایدار است یا PyPI در آن به‌درستی در دسترس نیست، نگران نباشید: همهٔ فراخوانی‌های pip در اسکریپت‌های نصب به‌صورت خودکار زنجیره‌ای از <b>میرورها</b> را امتحان می‌کنند — اگر یک میرور در دسترس نباشد، بدون دخالت شما از آن عبور کرده و میرور بعدی را می‌آزمایند. ترتیب پیش‌فرض: <b>PyPI رسمی ← ArvanCloud (ایران) ← TUNA ← Aliyun ← Tencent</b>.</p>
+    <div class="code"><span class="c"># force a specific working mirror</span>
+bash scripts/install.sh --mirror-name ir    <span class="c"># ArvanCloud (Iran)</span>
+bash scripts/install.sh --mirror-name tuna  <span class="c"># TUNA (China)</span>
+
+<span class="c"># 1) download everything once (on any working network)</span>
+bash scripts/download_wheels.sh --mirror-name ir
+<span class="c"># 2) install later with NO network at all</span>
+bash scripts/install.sh --offline</div>
+    <p class="body-text">در حالت <code class="inline">--offline</code>، pip اجازهٔ هیچ اتصال شبکه‌ای ندارد و فقط از پوشهٔ <code class="inline">vendor/wheels</code> نصب می‌کند؛ بنابراین قطع شدن اینترنت وسط نصب، دیگر نمی‌تواند نصب را نیمه‌تمام رها کند. همین زنجیرهٔ میرور در <code class="inline">scripts/build.sh</code> هم استفاده می‌شود تا ساخت بستهٔ DEB نیز از قطعی شبکه آسیب نبیند.</p>
+    <h3 class="sub"><span class="tick">›</span> فایل‌های مهم کجایند؟</h3>
+    <table>
+        <thead><tr><th style="width:38%">محل</th><th>مسیر</th></tr></thead>
+        <tbody>
+            <tr><td>دیتابیس برنامه</td><td><span class="cmd">~/.local/share/ssh-desk/ssh-desk.db</span></td></tr>
+            <tr><td>تنظیمات</td><td><span class="cmd">~/.config/ssh-desk/config.toml</span></td></tr>
+            <tr><td>known_hosts برنامه</td><td><span class="cmd">~/.local/share/ssh-desk/known_hosts</span></td></tr>
+            <tr><td>کلیدهای تولیدشده</td><td><span class="cmd">~/.local/share/ssh-desk/keys/</span></td></tr>
+            <tr><td>لاگ‌ها</td><td><span class="cmd">~/.local/share/ssh-desk/logs/</span></td></tr>
+            <tr><td>رمزها و صف‌های محرمانه</td><td>GNOME Keyring (Secret Service)</td></tr>
+        </tbody>
+    </table>
+    <div class="callout"><b>حذف برنامه:</b> <code class="inline">bash scripts/uninstall.sh</code> پیش از پاک‌کردن داده‌ها و رمزها به‌صراحت از شما اجازه می‌گیرد؛ بدون تأیید، هیچ داده‌ای حذف نمی‌شود.</div>
+
+    <!-- CH 3 -->
+    <div class="chapter-header">
+        <div class="section-tag">فصل ۰۳</div>
+        <div class="section-title">شروع سریع: اولین سرور</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text"><b>گام ۱ — اجرای برنامه:</b> با دستور <code class="inline">ssh-desk</code> رابط گرافیکی باز می‌شود؛ یا کاملاً در ترمینال بمانید و از <code class="inline">sss add</code> استفاده کنید.</p>
+    <p class="body-text"><b>گام ۲ — افزودن سرور:</b> در صفحهٔ Servers دکمهٔ «Add server» را بزنید. نام، نام‌کوتاه (Alias — یکتا و همان چیزی که با آن وصل می‌شوید)، میزبان، پورت، نام‌کاربری و مسیر پیش‌فرض را وارد کنید. اگر روش احراز را «رمز عبور» انتخاب کنید، رمز همان لحظه در GNOME Keyring ذخیره می‌شود — نه در دیتابیس. پیش از ذخیره، دکمهٔ <b>Test</b> یک اتصال واقعی می‌آزماید تا مطمئن شوید همه‌چیز درست است.</p>
+    <div class="code"><span class="c"># the same thing from the terminal (interactive wizard)</span>
+sss add
+sss add --alias prod --host 192.168.1.1 --port 22 --user root \
+        --auth password --path /var/www</div>
+    <p class="body-text"><b>گام ۳ — اتصال:</b> از هر ترمینالی بنویسید <code class="inline">sss prod</code> تا شِل تعاملی روی مسیر پیش‌فرض باز شود. در GUI هم دوبار کلیک روی سرور کافی است تا یک زبانهٔ ترمینال واقعی باز شود.</p>
+    <div class="callout"><b>اولین اتصال:</b> اثرانگشت (Fingerprint) کلید میزبان نمایش داده می‌شود؛ آن را با مدیر سرور تطبیق دهید و یک‌بار بپذیرید. اگر بعدها کلید میزبان <b>تغییر</b> کرده باشد، اتصال بلافاصله رد می‌شود و راهنمای بررسی احتمال حملهٔ MITM نمایش داده می‌شود.</div>
+
+    <!-- CH 4 -->
+    <div class="chapter-header">
+        <div class="section-tag">فصل ۰۴</div>
+        <div class="section-title">اتصال و مدیریت مسیرها</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text">هر سرور می‌تواند یک <b>مسیر پیش‌فرض</b> و هر تعداد <b>مسیر ذخیره‌شدهٔ نام‌دار</b> داشته باشد؛ مثلاً برای همان سرورِ تولید، مسیر <code class="inline">website ← /var/www/html</code> و <code class="inline">nginx ← /etc/nginx</code> را یک‌بار تعریف کنید و همیشه با یک کلمه به همان پوشه بپرید:</p>
+    <div class="code">sss prod               <span class="c"># shell at the server's default path</span>
+sss prod nginx         <span class="c"># shell at the saved path named "nginx"</span>
+sss prod /var/www      <span class="c"># shell at any absolute path</span>
+sss prod --exec "uptime"           <span class="c"># run one command, no shell</span>
+sss prod --user ubuntu --port 2222 <span class="c"># per-run override (NOT saved)</span>
+sss prod --dry-run                 <span class="c"># print the exact ssh command</span></div>
+    <p class="body-text">اگر مسیر درخواستی روی سرور وجود نداشته باشد، پیام خطا روشن و قابل‌فهم است — نه یک قطع‌شدگی مبهم. مسیرها با نقل‌قول امن (shlex) به سرور منتقل می‌شوند تا فاصله یا کاراکترهای خاص در نام پوشه مشکلی بسازند. گزینه‌های <code class="inline">--user</code> و <code class="inline">--port</code> فقط برای همان اجرا اعمال می‌شوند و هرگز در تنظیمات ذخیره نمی‌شوند.</p>
+    <h3 class="sub"><span class="tick">›</span> کدهای خروج CLI</h3>
+    <table>
+        <thead><tr><th style="width:22%">کد</th><th>معنا</th></tr></thead>
+        <tbody>
+            <tr><td><span class="cmd">0</span></td><td>عملیات موفق</td></tr>
+            <tr><td><span class="cmd">1</span></td><td>خطای زمان اجرا (اتصال، شبکه، Keyring و …)</td></tr>
+            <tr><td><span class="cmd">2</span></td><td>ورودی نامعتبر یا استفادهٔ نادرست از دستور</td></tr>
+            <tr><td><span class="cmd">130</span></td><td>قطع‌شدن با Ctrl+C</td></tr>
+        </tbody>
+    </table>
+    <p class="body-text">این کدها باعث می‌شوند <code class="inline">sss</code> در اسکریپت‌ها و اتوماسیون‌های شما هم رفتاری قابل‌اعتماد داشته باشد؛ مثلاً می‌توانید در CI یا cron بررسی کنید که اتصال موفق بوده است.</p>
+
+    <!-- CH 5 -->
+    <div class="chapter-header">
+        <div class="section-tag">فصل ۰۵</div>
+        <div class="section-title">مرجع کامل خط فرمان sss</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text">نام دستور <code class="inline">sss</code> نمونه‌ای است؛ می‌توانید با <code class="inline">sss config cli-name cnc</code> آن را به هر نام دلخواه (مثلاً cnc یا sshgo) تغییر دهید — تغییر در سطح سیستم‌عامل اعمال می‌شود (میان‌بر جدید در <code class="inline">~/.local/bin</code>). هر توکن اول که زیردستور شناخته‌شده نباشد، به‌عنوان نام‌کوتاه سرور تفسیر می‌شود؛ یعنی <code class="inline">sss prod</code> همان <code class="inline">sss connect prod</code> است.</p>
+    <h3 class="sub"><span class="tick">›</span> سرورها</h3>
+    <table>
+        <thead><tr><th style="width:42%">دستور</th><th>کار</th></tr></thead>
+        <tbody>
+            <tr><td><span class="cmd">sss list</span></td><td>جدول سرورها؛ با <span class="cmd">--group --favorites --search</span> فیلتر می‌شود</td></tr>
+            <tr><td><span class="cmd">sss add</span></td><td>افزودن تعاملی؛ همهٔ فیلدها را می‌توان با گزینه مستقیم داد</td></tr>
+            <tr><td><span class="cmd">sss info prod</span></td><td>جزئیات کامل؛ <span class="cmd">--show-secret</span> با چالش تایپ نام‌کوتاه</td></tr>
+            <tr><td><span class="cmd">sss edit prod</span></td><td>ویرایش میدان‌ها؛ <span class="cmd">--set-password</span> برای ثبت رمز جدید</td></tr>
+            <tr><td><span class="cmd">sss delete prod</span></td><td>حذف با تأیید؛ رازِ Keyring هم پاک می‌شود</td></tr>
+            <tr><td><span class="cmd">sss search TERM</span></td><td>جست‌وجو در نام، نام‌کوتاه، میزبان، کاربر و توضیح</td></tr>
+        </tbody>
+    </table>
+    <h3 class="sub"><span class="tick">›</span> مانیتورینگ و پیکربندی</h3>
+    <table>
+        <thead><tr><th style="width:42%">دستور</th><th>کار</th></tr></thead>
+        <tbody>
+            <tr><td><span class="cmd">sss history</span></td><td>تاریخچهٔ اتصال‌ها با فیلتر سرور/تعداد/وضعیت</td></tr>
+            <tr><td><span class="cmd">sss current</span></td><td>نشست‌های فعال SSH و تونل‌های در حال اجرا</td></tr>
+            <tr><td><span class="cmd">sss config list</span></td><td>همهٔ تنظیمات و مسیر فایل‌ها</td></tr>
+            <tr><td><span class="cmd">sss config set KEY VALUE</span></td><td>تغییر تنظیمات</td></tr>
+            <tr><td><span class="cmd">sss config cli-name cnc</span></td><td>تغییر نام دستور در سطح سیستم‌عامل</td></tr>
+            <tr><td><span class="cmd">sss config completions</span></td><td>نصب تکمیل خودکار bash/zsh</td></tr>
+        </tbody>
+    </table>
+    <h3 class="sub"><span class="tick">›</span> کلیدها، تونل‌ها و انتقال تنظیمات</h3>
+    <table>
+        <thead><tr><th style="width:42%">دستور</th><th>کار</th></tr></thead>
+        <tbody>
+            <tr><td><span class="cmd">sss keys generate</span></td><td>تولید Ed25519/RSA/ECDSA در قالب OpenSSH</td></tr>
+            <tr><td><span class="cmd">sss keys import</span></td><td>ثبت کلید موجود (با <span class="cmd">--copy</span> در انبار برنامه با دسترسی 0600)</td></tr>
+            <tr><td><span class="cmd">sss keys export-pub</span></td><td>استخراج کلید عمومی</td></tr>
+            <tr><td><span class="cmd">sss tunnel start|stop</span></td><td>اجرای تونل به‌صورت دیمن جدا از ترمینال</td></tr>
+            <tr><td><span class="cmd">sss import --file ~/.ssh/config</span></td><td>درون‌ریزی ssh config با پیش‌نمایش و کشف تکراری</td></tr>
+            <tr><td><span class="cmd">sss export FILE.toml</span></td><td>پشتیبان‌گیری؛ رمزها فقط با <span class="cmd">--include-secrets</span></td></tr>
+            <tr><td><span class="cmd">sss restore FILE.toml</span></td><td>بازگردانی پشتیبان</td></tr>
+            <tr><td><span class="cmd">sss install-cli</span></td><td>بازسازی میان‌برهای خط فرمان</td></tr>
+        </tbody>
+    </table>
+    <div class="callout"><b>تکمیل خودکار:</b> bash به‌طور خودکار نصب می‌شود (زیردستورها + نام‌کوتاه سرورها). برای zsh: <code class="inline">sss config completions --shell zsh --install</code> و سپس افزودن مسیر completions به <code class="inline">~/.zshrc</code>.</div>
+
+    <!-- CH 6 -->
+    <div class="chapter-header">
+        <div class="section-tag">فصل ۰۶</div>
+        <div class="section-title">رابط گرافیکی</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text">پنجرهٔ اصلی یک نوار کناری جمع‌شونده با ۹ صفحه و یک نوار وضعیت (نشست‌ها و تونل‌های فعال) دارد. زبان برنامه فارسی/انگلیسی و راست‌به‌چپ واقعی است و تم تیره/روشن از Settings تغییر می‌کند.</p>
+    <table>
+        <thead><tr><th style="width:30%">صفحه</th><th>کارکرد</th></tr></thead>
+        <tbody>
+            <tr><td>Dashboard</td><td>نمای کلی سرورها، نشست‌ها و تونل‌های فعال</td></tr>
+            <tr><td>Servers</td><td>جست‌وجو، فیلتر گروه/برچسب/علاقه‌مندی، Duplicate، تست سریع</td></tr>
+            <tr><td>Add/Edit Server</td><td>چهار بخش: عمومی، احراز هویت، اتصال و مسیرها، پیشرفته (Jump Host و گزینه‌های ssh)</td></tr>
+            <tr><td>Server Details</td><td>جزئیات؛ رمز به‌صورت ماسک‌شده و فقط با چالش تایپ نام‌کوتاه نمایان می‌شود</td></tr>
+            <tr><td>Terminal</td><td>زبان‌های ترمینال واقعی PTY با چند زبانه</td></tr>
+            <tr><td>Files</td><td>مدیر فایل دوپنجره‌ای SFTP با انتقال بین دو سرور</td></tr>
+            <tr><td>SSH Keys / Port Forwarding / Commands / History</td><td>مدیریت کلیدها، تونل‌ها، دستورات ذخیره‌شده و تاریخچهٔ اتصال‌ها</td></tr>
+            <tr><td>Settings</td><td>نام دستور CLI، تم، زبان، پیش‌فرض‌ها، وضعیت Keyring، پشتیبان‌گیری و درون‌ریزی ssh config</td></tr>
+        </tbody>
+    </table>
+    <h3 class="sub"><span class="tick">›</span> میان‌برهای صفحه‌کلید</h3>
+    <p class="body-text"><span class="kbd">Ctrl+1..9</span> جابه‌جایی بین صفحات · <span class="kbd">Ctrl+N</span> سرور جدید · <span class="kbd">Ctrl+K</span> نشست ترمینال جدید · <span class="kbd">Ctrl+Q</span> خروج.</p>
+    <div class="callout"><b>هم‌زمانی کامل GUI و CLI:</b> هر دو رابط از یک دیتابیس، یک Keyring و یک تنظیمات استفاده می‌کنند؛ سروری که در GUI می‌سازید بلافاصله برای <code class="inline">sss</code> در همهٔ ترمینال‌ها شناخته می‌شود و برعکس.</div>
+
+    <!-- CH 7 -->
+    <div class="chapter-header">
+        <div class="section-tag">فصل ۰۷</div>
+        <div class="section-title">ترمینال واقعی (PTY)</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text">هر زبانهٔ ترمینال یک نشست PTY واقعی روی OpenSSH است — نه یک جعبهٔ متن. هر چیزی که در یک ترمینال واقعی ممکن است، اینجا هم ممکن است:</p>
+    <ul class="body-list">
+        <li>رنگ‌ها، کلیدهای جهت‌دار، تکمیل با Tab، و اجرای <b>vim</b>، <b>nano</b> و <b>htop</b> به‌درستی کار می‌کنند.</li>
+        <li><b>Ctrl+C</b> و <b>Ctrl+D</b> فرایندها را مثل ترمینال سیستم قطع و می‌بندند.</li>
+        <li><b>کپی:</b> با ماوس متن را انتخاب کنید (کپی خودکار) یا از نوار ابزار استفاده کنید؛ <b>پیست:</b> کلیک میانی، نوار ابزار یا <span class="kbd">Ctrl+V</span> داخل ترمینال.</li>
+        <li><b>تغییر اندازه:</b> کشیدن پنجره، برنامهٔ سمت سرور را بی‌درنگ مطلع می‌کند (SIGWINCH) — ویرایشگرها و htop درست بازترسیم می‌شوند.</li>
+        <li>عنوان هر زبانه نام سرور و عنوان پنجرهٔ سمت سرور را نشان می‌دهد؛ برای اتصال مجدد کافی است نشست جدیدی از همان سرور باز کنید.</li>
+    </ul>
+    <div class="callout"><b>حریم خصوصی:</b> محتوای ترمینال هرگز ثبت (لاگ) نمی‌شود؛ فقط وضعیت اتصال و مدت آن در تاریخچه می‌آید.</div>
+
+    <!-- CH 8 -->
+    <div class="chapter-header">
+        <div class="section-tag">فصل ۰۸</div>
+        <div class="section-title">مدیریت فایل با SFTP</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text">از صفحهٔ Files سرور را انتخاب و Connect بزنید: پنجرهٔ چپ سیستم محلی و پنجرهٔ راست سرور است. ناوبری با دوبار کلیک روی پوشه‌ها، دکمهٔ «بالا» یا ویرایش مستقیم مسیر انجام می‌شود. همهٔ عملیات روزمره پشتیبانی می‌شود:</p>
+    <ul class="body-list">
+        <li><b>بارگذاری و دانلود</b> با کشیدن و رها کردن یا دکمه‌ها.</li>
+        <li><b>پوشهٔ جدید، تغییر نام، حذف</b> (با تأیید و به‌صورت بازگشتی).</li>
+        <li><b>تغییر مجوزها</b> به‌صورت هشت‌هشتی (مثلاً 0644) — بدون حفظ‌کردن اعداد در ذهن.</li>
+        <li><b>ویرایش فایل متنی:</b> فایل به‌صورت محلی باز و ویرایش می‌شود و پس از ذخیره، آپلود مجدد پیشنهاد می‌شود.</li>
+        <li><b>«ارسال به سرور…»:</b> یک فایل را مستقیم بین دو سرورِ ثبت‌شده جابه‌جا کنید — بدون دانلود به سیستم میانی.</li>
+    </ul>
+    <div class="callout"><b>اگر SFTP کار نمی‌کند ولی ترمینال کار می‌کند:</b> ممکن است سرور زیرسیستم SFTP را غیرفعال کرده باشد (<code class="inline">Subsystem sftp</code> در sshd_config) یا کلید میزبان هنوز پذیرفته نشده باشد — یک‌بار با ترمینال وصل شوید یا Test بزنید.</div>
+
+    <!-- CH 9 -->
+    <div class="chapter-header">
+        <div class="section-tag">فصل ۰۹</div>
+        <div class="section-title">کلیدها، تونل‌ها و دستورات ذخیره‌شده</div>
+        <div class="divider"></div>
+    </div>
+    <h3 class="sub"><span class="tick">›</span> کلیدهای SSH</h3>
+    <p class="body-text">کلید Ed25519 (پیشنهادی)، RSA یا ECDSA را در قالب استاندارد OpenSSH تولید کنید؛ گذرواژهٔ اختیاری کلید هم در Keyring ذخیره می‌شود. کلیدهای موجود را «ثبت» کنید (بدون کپی‌کردن فایل) یا با انتخاب خودِ شما با دسترسی 0600 در انبار برنامه کپی شوند. ستون اثرانگشت برای راستی‌آزمایی و ستون «سرورهای متصل» برای دیدن مصرف‌کنندگان هر کلید هست؛ «نصب روی سرور» دستور <code class="inline">ssh-copy-id</code> را می‌سازد و در یک نشست ترمینال اجرا می‌کند.</p>
+    <div class="code">sss keys generate --name deploy --type ed25519
+sss keys import --path ~/.ssh/id_ed25519 --name personal
+sss keys export-pub deploy</div>
+    <h3 class="sub"><span class="tick">›</span> تونل‌های پورت</h3>
+    <p class="body-text">سه نوع تونل: <b>Local</b> (مثلاً <code class="inline">127.0.0.1:5432 → db-internal:5432</code> برای رسیدن به دیتابیس داخلی)، <b>Remote</b> (معکوس، بازکردن پورت سرویس محلی روی سرور) و <b>Dynamic</b> (پروکسی SOCKS5 مثل <code class="inline">127.0.0.1:1080</code>). تونل‌ها در یک دیمن مستقل اجرا می‌شوند — با بستن GUI یا CLI نمی‌میرند و وضعیتشان در <code class="inline">sss current</code> دیده می‌شود.</p>
+    <div class="code">sss tunnel db       <span class="c"># start the tunnel named "db"</span>
+sss tunnel stop db
+sss current         <span class="c"># live sessions + running tunnels</span></div>
+    <h3 class="sub"><span class="tick">›</span> دستورات ذخیره‌شده</h3>
+    <p class="body-text">دستورهای پرتکرار را برای هر سرور یا سراسری ذخیره کنید (نام، دستور، دسته). دستورهای حساس با پرچم «نیاز به تأیید» قبل از اجرا می‌پرسند. اجرا از صفحهٔ Commands در GUI یا با <code class="inline">sss prod --exec "&lt;command&gt;"</code> در ترمینال ممکن است.</p>
+
+    <!-- CH 10 -->
+    <div class="chapter-header">
+        <div class="section-tag">فصل ۱۰</div>
+        <div class="section-title">مدل امنیتی</div>
+        <div class="divider"></div>
+    </div>
+    <p class="body-text">SSH Desk برای نگه‌داری اعتبارنامه‌های سرورهای تولیدی طراحی شده و از اول تا آخر بر یک اصل بنا شده است: <b>راز فقط در Secret Service می‌ماند</b>. مهم‌ترین کنترل‌ها:</p>
+    <div class="grid-2">
+        <div class="card"><div class="card-title"><span class="n">۱</span> — رمزها فقط در GNOME Keyring</div><p>دیتابیس فقط یک ارجاع بدون‌راز (JSON) نگه می‌دارد؛ خودِ رمز هرگز به SQLite نمی‌رسد (با تست خودکار راستی‌آزمایی شده است).</p></div>
+        <div class="card"><div class="card-title"><span class="n">۲</span> — askpass امن، نه sshpass</div><p>OpenSSH با <code class="inline">SSH_ASKPASS_REQUIRE=force</code> و helper امن اجرا می‌شود و راز را «با ارجاع» از Keyring می‌خواند؛ رمز در argv، محیط، لاگ یا فایل موقت نمی‌آید.</p></div>
+        <div class="card"><div class="card-title"><span class="n">۳</span> — Host Key همیشه سخت‌گیرانه</div><p><code class="inline">StrictHostKeyChecking=yes</code> در سازندهٔ دستور قطعی است و خاموش‌کردنش ممکن نیست؛ میزبان ناشناس ← پنجرهٔ اثرانگشت؛ تغییر کلید ← هشدار MITM و راهنمای <code class="inline">ssh-keygen -R</code>.</p></div>
+        <div class="card"><div class="card-title"><span class="n">۴</span> — مقاوم به تزریق</div><p>همهٔ فراخوانی‌های subprocess با آرایهٔ آرگومان‌ها و بدون shell=True انجام می‌شوند؛ مسیرهای راه‌دور با shlex.quote نقل‌قول می‌شوند و همهٔ ورودی‌ها با Pydantic اعتبارسنجی می‌شوند.</p></div>
+    </div>
+    <h3 class="sub"><span class="tick">›</span> سایر کنترل‌ها</h3>
+    <ul class="body-list">
+        <li>مجوز فایل‌ها: دیتابیس و پیکربندی 0600، پوشه‌های داده 0700، کلیدهای خصوصی 0600.</li>
+        <li>لاگر همهٔ الگوهای <code class="inline">password=</code>، <code class="inline">secret=</code> و رازهای ثبت‌شدهٔ زمان اجرا را حذف می‌کند.</li>
+        <li>نمایش/کپی رمز نیازمند چالش تایپ نام‌کوتاه است و کلیپ‌بورد پس از ۳۰ ثانیه خودکار پاک می‌شود.</li>
+        <li>عملیات حساس — حذف سرور، حذف بازگشتی فایل، پاک‌سازی کامل داده (تایپ PURGE) — همیشه تأیید می‌خواهند.</li>
+        <li>هیچ دیمنی با دسترسی root اجرا نمی‌شود؛ GUI و CLI هرگز sudo نمی‌خواهند.</li>
+        <li>تولید کلید کاملاً درون‌فرایندی است؛ گذرواژهٔ کلید هم به argv یا فایل موقت نمی‌رسد.</li>
+        <li>خروجی/پشتیبان به‌طور پیش‌فرض بی‌رمز است؛ گنجاندن رمزها opt-in با هشدار صریح است.</li>
+    </ul>
+
+    <!-- CH 11 -->
+    <div class="chapter-header">
+        <div class="section-tag">فصل ۱۱</div>
+        <div class="section-title">پشتیبان‌گیری، انتقال و عیب‌یابی</div>
+        <div class="divider"></div>
+    </div>
+    <h3 class="sub"><span class="tick">›</span> پشتیبان و بازگردانی</h3>
+    <div class="code">sss backup backup.toml                  <span class="c"># no secrets by default</span>
+sss restore backup.toml
+sss export full.toml --include-secrets  <span class="c"># opt-in + warning</span>
+sss import --file ~/.ssh/config         <span class="c"># preview, then: --apply</span></div>
+    <p class="body-text">درون‌ریزی از <code class="inline">~/.ssh/config</code> با پیش‌نمایش و کشف سرورهای تکراری انجام می‌شود؛ خروجی TOML برای انتقال تنظیمات به ماشین دیگر است و تا خودتان نخواهید، رمزی در آن نیست.</p>
+    <h3 class="sub"><span class="tick">›</span> خطاهای رایج و راه‌حل</h3>
+    <table>
+        <thead><tr><th style="width:44%">علامت</th><th>راه‌حل</th></tr></thead>
+        <tbody>
+            <tr><td><span class="cmd">sss: command not found</span></td><td><span class="cmd">~/.local/bin</span> را به PATH اضافه کنید یا <span class="cmd">sss install-cli</span> بزنید</td></tr>
+            <tr><td>«Secret Service is not available»</td><td><span class="cmd">sudo apt install gnome-keyring libsecret-1-0</span> و یک‌بار ورود مجدد</td></tr>
+            <tr><td>Keyring قفل است</td><td>یک‌بار بازگشایی کنید؛ برنامه هم در صورت امکان تعاملی می‌پرسد</td></tr>
+            <tr><td>Host key changed</td><td>فقط پس از راستی‌آزمایی: <span class="cmd">ssh-keygen -R "[host]:port"</span> و سپس پذیرش دوباره</td></tr>
+            <tr><td>Permission denied</td><td>رمز: <span class="cmd">sss edit prod --set-password</span> · کلید: <span class="cmd">sss keys list</span></td></tr>
+            <tr><td>GUI باز نمی‌شود</td><td><span class="cmd">ssh-desk 2>&amp;1 | tail -20</span>؛ کتابخانه‌های Qt را نصب کنید؛ Wayland: <span class="cmd">QT_QPA_PLATFORM=xcb</span></td></tr>
+            <tr><td>پورت تونل اشغال است</td><td><span class="cmd">ss -tlnp | grep &lt;port&gt;</span> و سپس <span class="cmd">sss tunnel stop</span></td></tr>
+        </tbody>
+    </table>
+    <div class="callout"><b>بازنشانی کامل:</b> <code class="inline">sss uninstall-data</code> — برای پاک‌سازی داده‌ها و رازهای Keyring باید PURGE را تایپ کنید.</div>
+
+</div>
+
+<!-- ============================ ENDING ============================ -->
+<div class="ending">
+    <div class="glow g1"></div>
+    <div class="big">اتصال امن، همیشه در دسترس.</div>
+    <div class="sub">SSH Desk متن‌باز است تحت مجوز MIT. اگر این راهنما به کارتان آمد، برای گزارش مسئله یا پیشنهاد ویژگی جدید به مخزن GitHub سر بزنید.</div>
+    <div class="repo-strip">github.com/hmplus28/SSH-Desk</div>
+    <div class="foot">
+        <div>SSH Desk — راهنمای کاربر · ویرایش ۱٫۰</div>
+        <div class="repo">MIT License</div>
+    </div>
+</div>
+
+</body>
+</html>
